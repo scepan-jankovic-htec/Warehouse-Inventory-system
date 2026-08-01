@@ -19,6 +19,7 @@ This document does not contain Angular code. It is the implementation reference 
 | HTTP client | Angular `HttpClient` |
 | Routing | Angular Router |
 | Forms | Angular Reactive Forms |
+| UI component library | Angular Material |
 | Styling | Component-scoped CSS |
 | Testing | Jest or Jasmine + Karma, Angular Testing Library |
 | Build | Angular CLI |
@@ -28,6 +29,8 @@ This document does not contain Angular code. It is the implementation reference 
 Angular 21 is fully standalone-first. This project does **not** use `NgModule`-based feature modules. Every component, directive, and pipe is declared as a standalone artifact and imports its own dependencies directly.
 
 The project uses **Angular Signals** as the primary reactivity primitive. `RxJS` observables are used only where Angular APIs require them (for example, `HttpClient`) and are converted to signals at the service boundary wherever possible.
+
+The application uses **Angular Material** as the approved UI component library and design system foundation. Material components are used for consistent controls, forms, dialogs, tables, navigation, and accessibility defaults, with project-specific styling layered on top where needed.
 
 ---
 
