@@ -1,0 +1,4 @@
+-- V1__baseline.sql
+-- Baseline migration file for Flyway database versioning.
+-- This file establishes the migration history table.
+-- Actual schema creation migrations will follow in V2, V3, etc.
