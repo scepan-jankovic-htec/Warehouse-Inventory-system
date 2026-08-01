@@ -10,6 +10,8 @@ import com.warehouse.inventory.domain.enums.MovementType;
 import com.warehouse.inventory.dto.request.AdjustStockRequest;
 import com.warehouse.inventory.dto.request.ReceiveStockRequest;
 import com.warehouse.inventory.dto.request.TransferStockRequest;
+import com.warehouse.inventory.repository.InventoryMovementRepository;
+import com.warehouse.inventory.repository.InventoryRepository;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +31,20 @@ public class MovementService extends ServiceValidationSupport {
 
     private final ProductService productService;
     private final LocationService locationService;
+    private final InventoryRepository inventoryRepository;
+    private final InventoryMovementRepository movementRepository;
 
-    public MovementService(Validator validator, ProductService productService, LocationService locationService) {
+    public MovementService(
+            Validator validator,
+            ProductService productService,
+            LocationService locationService,
+            InventoryRepository inventoryRepository,
+            InventoryMovementRepository movementRepository) {
         super(validator);
         this.productService = productService;
         this.locationService = locationService;
+        this.inventoryRepository = inventoryRepository;
+        this.movementRepository = movementRepository;
     }
 
     @Transactional
@@ -62,7 +73,10 @@ public class MovementService extends ServiceValidationSupport {
         movement.setReason(normalizeNullableText(request.reason()));
         movement.setPerformedBy(activeActor);
 
-        return toMovementResult(movement, quantityAfter, LocalDateTime.now());
+        inventoryRepository.save(inventory);
+        InventoryMovement saved = movementRepository.save(movement);
+
+        return toMovementResult(saved, quantityAfter, saved.getPerformedAt());
     }
 
     @Transactional
@@ -96,7 +110,6 @@ public class MovementService extends ServiceValidationSupport {
         String transferId = request.referenceId() == null || request.referenceId().isBlank()
             ? "TRF-" + UUID.randomUUID()
             : request.referenceId().trim();
-        LocalDateTime performedAt = LocalDateTime.now();
 
         InventoryMovement outboundMovement = new InventoryMovement();
         outboundMovement.setProduct(product);
@@ -119,10 +132,25 @@ public class MovementService extends ServiceValidationSupport {
         outboundMovement.setTransferCounterpart(inboundMovement);
         inboundMovement.setTransferCounterpart(outboundMovement);
 
+        inventoryRepository.save(sourceInventory);
+        inventoryRepository.save(destinationInventory);
+
+        // Save outbound first (no counterpart FK yet) to get its ID.
+        outboundMovement.setTransferCounterpart(null);
+        InventoryMovement savedOut = movementRepository.save(outboundMovement);
+
+        // Save inbound referencing savedOut as its counterpart.
+        inboundMovement.setTransferCounterpart(savedOut);
+        InventoryMovement savedIn = movementRepository.save(inboundMovement);
+
+        // Update outbound with inbound's ID.
+        savedOut.setTransferCounterpart(savedIn);
+        savedOut = movementRepository.save(savedOut);
+
         return new TransferResult(
             transferId,
-            toMovementResult(outboundMovement, sourceInventory.getQuantityOnHand(), performedAt),
-            toMovementResult(inboundMovement, destinationInventory.getQuantityOnHand(), performedAt),
+            toMovementResult(savedOut, sourceInventory.getQuantityOnHand(), savedOut.getPerformedAt()),
+            toMovementResult(savedIn, destinationInventory.getQuantityOnHand(), savedIn.getPerformedAt()),
             new ProductSnapshot(product.getId(), product.getSku(), product.getName()),
             new ActorSnapshot(activeActor.getId(), activeActor.getUsername(), activeActor.getFullName())
         );
@@ -162,7 +190,10 @@ public class MovementService extends ServiceValidationSupport {
         movement.setReferenceId(normalizeNullableText(request.referenceId()));
         movement.setPerformedBy(activeActor);
 
-        return toMovementResult(movement, quantityAfter, LocalDateTime.now());
+        inventoryRepository.save(inventory);
+        InventoryMovement saved = movementRepository.save(movement);
+
+        return toMovementResult(saved, quantityAfter, saved.getPerformedAt());
     }
 
     public PageResult<HistoryView> findAll(Collection<InventoryMovement> movements, MovementHistoryQuery query) {

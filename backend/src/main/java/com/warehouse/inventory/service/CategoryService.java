@@ -4,6 +4,7 @@ import com.warehouse.inventory.domain.Category;
 import com.warehouse.inventory.domain.Product;
 import com.warehouse.inventory.dto.request.CreateCategoryRequest;
 import com.warehouse.inventory.dto.request.UpdateCategoryRequest;
+import com.warehouse.inventory.repository.CategoryRepository;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,11 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class CategoryService extends ServiceValidationSupport {
 
-    public CategoryService(Validator validator) {
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(Validator validator, CategoryRepository categoryRepository) {
         super(validator);
+        this.categoryRepository = categoryRepository;
     }
 
     public PageResult<CategoryView> findAll(Collection<Category> categories, CategoryQuery query) {
@@ -55,7 +59,7 @@ public class CategoryService extends ServiceValidationSupport {
         category.setName(request.name().trim());
         category.setDescription(normalizeNullableText(request.description()));
         category.setActive(true);
-        return category;
+        return categoryRepository.save(category);
     }
 
     @Transactional
@@ -68,7 +72,7 @@ public class CategoryService extends ServiceValidationSupport {
 
         category.setName(request.name().trim());
         category.setDescription(normalizeNullableText(request.description()));
-        return category;
+        return categoryRepository.save(category);
     }
 
     @Transactional
@@ -78,12 +82,14 @@ public class CategoryService extends ServiceValidationSupport {
             throw new IllegalStateException("Category is already inactive.");
         }
         category.setActive(false);
+        categoryRepository.save(category);
     }
 
     @Transactional
     public void activate(Collection<Category> categories, Integer categoryId) {
         Category category = resolveCategory(categories, categoryId);
         category.setActive(true);
+        categoryRepository.save(category);
     }
 
     public long countAssignedProducts(Category category, Collection<Product> products) {

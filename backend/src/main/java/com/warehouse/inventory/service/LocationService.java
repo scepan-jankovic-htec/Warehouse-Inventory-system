@@ -4,6 +4,7 @@ import com.warehouse.inventory.domain.Location;
 import com.warehouse.inventory.domain.enums.LocationType;
 import com.warehouse.inventory.dto.request.CreateLocationRequest;
 import com.warehouse.inventory.dto.request.UpdateLocationRequest;
+import com.warehouse.inventory.repository.LocationRepository;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,11 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class LocationService extends ServiceValidationSupport {
 
-    public LocationService(Validator validator) {
+    private final LocationRepository locationRepository;
+
+    public LocationService(Validator validator, LocationRepository locationRepository) {
         super(validator);
+        this.locationRepository = locationRepository;
     }
 
     public PageResult<LocationView> findAll(Collection<Location> locations, LocationQuery query) {
@@ -57,7 +61,7 @@ public class LocationService extends ServiceValidationSupport {
         location.setType(LocationType.valueOf(request.type().trim().toUpperCase(Locale.ROOT)));
         location.setAddress(normalizeNullableText(request.address()));
         location.setActive(true);
-        return location;
+        return locationRepository.save(location);
     }
 
     @Transactional
@@ -71,7 +75,7 @@ public class LocationService extends ServiceValidationSupport {
         location.setName(request.name().trim());
         location.setType(LocationType.valueOf(request.type().trim().toUpperCase(Locale.ROOT)));
         location.setAddress(normalizeNullableText(request.address()));
-        return location;
+        return locationRepository.save(location);
     }
 
     @Transactional
@@ -81,11 +85,14 @@ public class LocationService extends ServiceValidationSupport {
             throw new IllegalStateException("Location is already inactive.");
         }
         location.setActive(false);
+        locationRepository.save(location);
     }
 
     @Transactional
     public void activate(Collection<Location> locations, Integer locationId) {
-        resolveLocation(locations, locationId).setActive(true);
+        Location location = resolveLocation(locations, locationId);
+        location.setActive(true);
+        locationRepository.save(location);
     }
 
     public Location resolveActiveLocation(Collection<Location> locations, Integer locationId) {

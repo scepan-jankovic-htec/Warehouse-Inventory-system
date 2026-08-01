@@ -4,6 +4,7 @@ import com.warehouse.inventory.domain.AppUser;
 import com.warehouse.inventory.domain.enums.UserRole;
 import com.warehouse.inventory.dto.request.CreateUserRequest;
 import com.warehouse.inventory.dto.request.UpdateUserRequest;
+import com.warehouse.inventory.repository.UserRepository;
 import jakarta.validation.Validator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,12 @@ import java.util.Objects;
 public class UserService extends ServiceValidationSupport {
 
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public UserService(Validator validator, PasswordEncoder passwordEncoder) {
+    public UserService(Validator validator, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         super(validator);
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public PageResult<UserView> findAll(Collection<AppUser> users, UserQuery query) {
@@ -64,7 +67,7 @@ public class UserService extends ServiceValidationSupport {
         user.setEmail(request.email().trim().toLowerCase(Locale.ROOT));
         user.setRole(UserRole.valueOf(request.role().trim().toUpperCase(Locale.ROOT)));
         user.setActive(true);
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -78,7 +81,7 @@ public class UserService extends ServiceValidationSupport {
         user.setFullName(request.fullName().trim());
         user.setEmail(request.email().trim().toLowerCase(Locale.ROOT));
         user.setRole(UserRole.valueOf(request.role().trim().toUpperCase(Locale.ROOT)));
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -88,11 +91,14 @@ public class UserService extends ServiceValidationSupport {
             throw new IllegalStateException("User is already inactive.");
         }
         user.setActive(false);
+        userRepository.save(user);
     }
 
     @Transactional
     public void activate(Collection<AppUser> users, Integer userId) {
-        resolveUser(users, userId).setActive(true);
+        AppUser user = resolveUser(users, userId);
+        user.setActive(true);
+        userRepository.save(user);
     }
 
     private AppUser resolveUser(Collection<AppUser> users, Integer userId) {

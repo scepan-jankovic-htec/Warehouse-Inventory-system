@@ -8,6 +8,7 @@ import com.warehouse.inventory.domain.enums.LocationType;
 import com.warehouse.inventory.domain.enums.StockStatus;
 import com.warehouse.inventory.dto.request.CreateProductRequest;
 import com.warehouse.inventory.dto.request.UpdateProductRequest;
+import com.warehouse.inventory.repository.ProductRepository;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +25,11 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class ProductService extends ServiceValidationSupport {
 
-    public ProductService(Validator validator) {
+    private final ProductRepository productRepository;
+
+    public ProductService(Validator validator, ProductRepository productRepository) {
         super(validator);
+        this.productRepository = productRepository;
     }
 
     public PageResult<ProductView> findAll(Collection<Product> products, ProductQuery query) {
@@ -76,7 +80,7 @@ public class ProductService extends ServiceValidationSupport {
         product.setUnitOfMeasure(request.unitOfMeasure().trim().toUpperCase(Locale.ROOT));
         product.setReorderThreshold(request.reorderThreshold() == null ? 0 : request.reorderThreshold());
         product.setActive(true);
-        return product;
+        return productRepository.save(product);
     }
 
     @Transactional
@@ -93,7 +97,7 @@ public class ProductService extends ServiceValidationSupport {
         product.setCategory(category);
         product.setUnitOfMeasure(request.unitOfMeasure().trim().toUpperCase(Locale.ROOT));
         product.setReorderThreshold(request.reorderThreshold() == null ? 0 : request.reorderThreshold());
-        return product;
+        return productRepository.save(product);
     }
 
     @Transactional
@@ -103,11 +107,14 @@ public class ProductService extends ServiceValidationSupport {
             throw new IllegalStateException("Product is already inactive.");
         }
         product.setActive(false);
+        productRepository.save(product);
     }
 
     @Transactional
     public void activate(Collection<Product> products, Integer productId) {
-        resolveProduct(products, productId).setActive(true);
+        Product product = resolveProduct(products, productId);
+        product.setActive(true);
+        productRepository.save(product);
     }
 
     public Product resolveActiveProduct(Collection<Product> products, Integer productId) {
