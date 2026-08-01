@@ -124,7 +124,7 @@ public class DashboardService {
     }
 
     public record RecentMovementView(
-        Long id,
+        Integer id,
         MovementType movementType,
         String productName,
         String locationName,
@@ -133,7 +133,7 @@ public class DashboardService {
     ) {
     }
 
-    public record DashboardLocationView(Long id, String name, LocationType type) {
+    public record DashboardLocationView(Integer id, String name, LocationType type) {
     }
 
     public record StockHealthView(

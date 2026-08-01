@@ -40,7 +40,7 @@ public class InventoryService {
         return PageResult.of(result, page, size);
     }
 
-    public InventoryView findByProductAndLocation(Collection<Inventory> inventories, Long productId, Long locationId) {
+    public InventoryView findByProductAndLocation(Collection<Inventory> inventories, Integer productId, Integer locationId) {
         Inventory inventory = inventories.stream()
             .filter(candidate -> hasProductId(candidate, productId))
             .filter(candidate -> hasLocationId(candidate, locationId))
@@ -65,15 +65,15 @@ public class InventoryService {
         return StockStatus.IN_STOCK;
     }
 
-    private boolean hasLocationId(Inventory inventory, Long locationId) {
+    private boolean hasLocationId(Inventory inventory, Integer locationId) {
         return inventory.getLocation() != null && Objects.equals(inventory.getLocation().getId(), locationId);
     }
 
-    private boolean hasProductId(Inventory inventory, Long productId) {
+    private boolean hasProductId(Inventory inventory, Integer productId) {
         return inventory.getProduct() != null && Objects.equals(inventory.getProduct().getId(), productId);
     }
 
-    private boolean hasCategoryId(Inventory inventory, Long categoryId) {
+    private boolean hasCategoryId(Inventory inventory, Integer categoryId) {
         return inventory.getProduct() != null
             && inventory.getProduct().getCategory() != null
             && Objects.equals(inventory.getProduct().getCategory().getId(), categoryId);
@@ -144,7 +144,7 @@ public class InventoryService {
     }
 
     public record InventoryProductView(
-        Long id,
+        Integer id,
         String sku,
         String name,
         String unitOfMeasure,
@@ -153,14 +153,14 @@ public class InventoryService {
     }
 
     public record InventoryLocationView(
-        Long id,
+        Integer id,
         String name,
         LocationType type
     ) {
     }
 
     public record InventoryView(
-        Long id,
+        Integer id,
         InventoryProductView product,
         InventoryLocationView location,
         int quantityOnHand,

@@ -1,5 +1,7 @@
 package com.warehouse.inventory.domain;
 
+import com.warehouse.inventory.config.BooleanToIntegerConverter;
+import com.warehouse.inventory.config.UtcIsoLocalDateTimeConverter;
 import com.warehouse.inventory.domain.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -7,7 +9,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +30,7 @@ public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @NotBlank
     @Size(max = 100)
@@ -53,15 +57,21 @@ public class AppUser {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
-    @Column(name = "is_active", nullable = false)
+    @Convert(converter = BooleanToIntegerConverter.class)
+    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Column(name = "is_active", nullable = false, columnDefinition = "INTEGER")
     private boolean isActive = true;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TEXT")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TEXT")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "performedBy", fetch = FetchType.LAZY)
@@ -69,7 +79,7 @@ public class AppUser {
 
     public AppUser() {}
 
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

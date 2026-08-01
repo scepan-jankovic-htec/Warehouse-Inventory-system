@@ -6,13 +6,13 @@ import jakarta.validation.constraints.Size;
 
 public record TransferStockRequest(
     @NotNull(message = "Product ID is required.")
-    Long productId,
+    Integer productId,
 
     @NotNull(message = "Source location ID is required.")
-    Long sourceLocationId,
+    Integer sourceLocationId,
 
     @NotNull(message = "Destination location ID is required.")
-    Long destinationLocationId,
+    Integer destinationLocationId,
 
     @NotNull(message = "Quantity is required.")
     @Min(value = 1, message = "Quantity must be greater than 0.")

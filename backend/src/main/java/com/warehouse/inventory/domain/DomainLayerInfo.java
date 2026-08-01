@@ -20,7 +20,7 @@ package com.warehouse.inventory.domain;
  * - AppUser (user accounts with roles)
  * 
  * Entity design rules:
- * - All entities have a surrogate Long id as primary key
+ * - All entities have a surrogate Integer id as primary key
  * - All entities include createdAt and updatedAt timestamps
  * - Entities supporting soft deletion include isActive boolean
  * - InventoryMovement is write-once, never modified

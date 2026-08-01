@@ -7,10 +7,10 @@ import jakarta.validation.constraints.Size;
 
 public record AdjustStockRequest(
     @NotNull(message = "Product ID is required.")
-    Long productId,
+    Integer productId,
 
     @NotNull(message = "Location ID is required.")
-    Long locationId,
+    Integer locationId,
 
     @NotNull(message = "Quantity delta is required.")
     Integer quantityDelta,

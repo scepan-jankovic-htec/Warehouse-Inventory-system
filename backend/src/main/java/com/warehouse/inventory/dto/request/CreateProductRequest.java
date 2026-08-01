@@ -20,7 +20,7 @@ public record CreateProductRequest(
     String description,
 
     @NotNull(message = "Category ID is required.")
-    Long categoryId,
+    Integer categoryId,
 
     @NotBlank(message = "Unit of measure must not be blank.")
     @Size(max = 20, message = "Unit of measure must not exceed 20 characters.")

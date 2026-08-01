@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Size;
 
 public record ReceiveStockRequest(
     @NotNull(message = "Product ID is required.")
-    Long productId,
+    Integer productId,
 
     @NotNull(message = "Location ID is required.")
-    Long locationId,
+    Integer locationId,
 
     @NotNull(message = "Quantity is required.")
     @Min(value = 1, message = "Quantity must be greater than 0.")

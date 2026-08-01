@@ -46,7 +46,7 @@ public class UserService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public UserView findById(Collection<AppUser> users, Long userId) {
+    public UserView findById(Collection<AppUser> users, Integer userId) {
         return toUserView(resolveUser(users, userId));
     }
 
@@ -68,7 +68,7 @@ public class UserService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public AppUser update(Collection<AppUser> existingUsers, Long userId, UpdateUserRequest request) {
+    public AppUser update(Collection<AppUser> existingUsers, Integer userId, UpdateUserRequest request) {
         Objects.requireNonNull(existingUsers, "Users must not be null.");
         validate(request);
 
@@ -82,7 +82,7 @@ public class UserService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void deactivate(Collection<AppUser> users, Long userId) {
+    public void deactivate(Collection<AppUser> users, Integer userId) {
         AppUser user = resolveUser(users, userId);
         if (!user.isActive()) {
             throw new IllegalStateException("User is already inactive.");
@@ -91,11 +91,11 @@ public class UserService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void activate(Collection<AppUser> users, Long userId) {
+    public void activate(Collection<AppUser> users, Integer userId) {
         resolveUser(users, userId).setActive(true);
     }
 
-    private AppUser resolveUser(Collection<AppUser> users, Long userId) {
+    private AppUser resolveUser(Collection<AppUser> users, Integer userId) {
         Objects.requireNonNull(users, "Users must not be null.");
         Objects.requireNonNull(userId, "User ID must not be null.");
 
@@ -105,7 +105,7 @@ public class UserService extends ServiceValidationSupport {
             .orElseThrow(() -> new NoSuchElementException("User not found for id=" + userId));
     }
 
-    private void ensureUniqueUsername(Collection<AppUser> users, String username, Long currentId) {
+    private void ensureUniqueUsername(Collection<AppUser> users, String username, Integer currentId) {
         String normalized = username.trim().toLowerCase(Locale.ROOT);
         boolean exists = users.stream()
             .filter(user -> currentId == null || !Objects.equals(user.getId(), currentId))
@@ -119,7 +119,7 @@ public class UserService extends ServiceValidationSupport {
         }
     }
 
-    private void ensureUniqueEmail(Collection<AppUser> users, String email, Long currentId) {
+    private void ensureUniqueEmail(Collection<AppUser> users, String email, Integer currentId) {
         String normalized = email.trim().toLowerCase(Locale.ROOT);
         boolean exists = users.stream()
             .filter(user -> currentId == null || !Objects.equals(user.getId(), currentId))
@@ -172,7 +172,7 @@ public class UserService extends ServiceValidationSupport {
     }
 
     public record UserView(
-        Long id,
+        Integer id,
         String username,
         String fullName,
         String email,

@@ -190,7 +190,7 @@ public class MovementService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public HistoryView findById(Collection<InventoryMovement> movements, Long movementId) {
+    public HistoryView findById(Collection<InventoryMovement> movements, Integer movementId) {
         InventoryMovement movement = movements.stream()
             .filter(candidate -> Objects.equals(candidate.getId(), movementId))
             .findFirst()
@@ -207,7 +207,7 @@ public class MovementService extends ServiceValidationSupport {
         return actor;
     }
 
-    private java.util.Optional<Inventory> findExistingInventory(Collection<Inventory> inventories, Long productId, Long locationId) {
+    private java.util.Optional<Inventory> findExistingInventory(Collection<Inventory> inventories, Integer productId, Integer locationId) {
         return inventories.stream()
             .filter(inventory -> inventory.getProduct() != null)
             .filter(inventory -> inventory.getLocation() != null)
@@ -227,15 +227,15 @@ public class MovementService extends ServiceValidationSupport {
             });
     }
 
-    private boolean hasProductId(InventoryMovement movement, Long productId) {
+    private boolean hasProductId(InventoryMovement movement, Integer productId) {
         return movement.getProduct() != null && Objects.equals(movement.getProduct().getId(), productId);
     }
 
-    private boolean hasLocationId(InventoryMovement movement, Long locationId) {
+    private boolean hasLocationId(InventoryMovement movement, Integer locationId) {
         return movement.getLocation() != null && Objects.equals(movement.getLocation().getId(), locationId);
     }
 
-    private boolean hasPerformedBy(InventoryMovement movement, Long performedBy) {
+    private boolean hasPerformedBy(InventoryMovement movement, Integer performedBy) {
         return movement.getPerformedBy() != null && Objects.equals(movement.getPerformedBy().getId(), performedBy);
     }
 
@@ -315,17 +315,17 @@ public class MovementService extends ServiceValidationSupport {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    public record ProductSnapshot(Long id, String sku, String name) {
+    public record ProductSnapshot(Integer id, String sku, String name) {
     }
 
-    public record LocationSnapshot(Long id, String name, LocationType type) {
+    public record LocationSnapshot(Integer id, String name, LocationType type) {
     }
 
-    public record ActorSnapshot(Long id, String username, String fullName) {
+    public record ActorSnapshot(Integer id, String username, String fullName) {
     }
 
     public record MovementResult(
-        Long id,
+        Integer id,
         MovementType movementType,
         ProductSnapshot product,
         LocationSnapshot location,
@@ -348,14 +348,14 @@ public class MovementService extends ServiceValidationSupport {
     }
 
     public record HistoryView(
-        Long id,
+        Integer id,
         MovementType movementType,
         ProductSnapshot product,
         LocationSnapshot location,
         int quantityDelta,
         String referenceId,
         String reason,
-        Long transferCounterpartId,
+        Integer transferCounterpartId,
         ActorSnapshot performedBy,
         LocalDateTime performedAt
     ) {

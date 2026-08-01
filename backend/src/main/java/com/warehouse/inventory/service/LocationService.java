@@ -42,7 +42,7 @@ public class LocationService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public LocationView findById(Collection<Location> locations, Long locationId) {
+    public LocationView findById(Collection<Location> locations, Integer locationId) {
         return toLocationView(resolveLocation(locations, locationId));
     }
 
@@ -61,7 +61,7 @@ public class LocationService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public Location update(Collection<Location> existingLocations, Long locationId, UpdateLocationRequest request) {
+    public Location update(Collection<Location> existingLocations, Integer locationId, UpdateLocationRequest request) {
         Objects.requireNonNull(existingLocations, "Locations must not be null.");
         validate(request);
 
@@ -75,7 +75,7 @@ public class LocationService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void deactivate(Collection<Location> locations, Long locationId) {
+    public void deactivate(Collection<Location> locations, Integer locationId) {
         Location location = resolveLocation(locations, locationId);
         if (!location.isActive()) {
             throw new IllegalStateException("Location is already inactive.");
@@ -84,11 +84,11 @@ public class LocationService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void activate(Collection<Location> locations, Long locationId) {
+    public void activate(Collection<Location> locations, Integer locationId) {
         resolveLocation(locations, locationId).setActive(true);
     }
 
-    public Location resolveActiveLocation(Collection<Location> locations, Long locationId) {
+    public Location resolveActiveLocation(Collection<Location> locations, Integer locationId) {
         Location location = resolveLocation(locations, locationId);
         if (!location.isActive()) {
             throw new IllegalStateException("Location is inactive.");
@@ -96,7 +96,7 @@ public class LocationService extends ServiceValidationSupport {
         return location;
     }
 
-    private Location resolveLocation(Collection<Location> locations, Long locationId) {
+    private Location resolveLocation(Collection<Location> locations, Integer locationId) {
         Objects.requireNonNull(locations, "Locations must not be null.");
         Objects.requireNonNull(locationId, "Location ID must not be null.");
 
@@ -106,7 +106,7 @@ public class LocationService extends ServiceValidationSupport {
             .orElseThrow(() -> new NoSuchElementException("Location not found for id=" + locationId));
     }
 
-    private void ensureUniqueName(Collection<Location> locations, String name, Long currentId) {
+    private void ensureUniqueName(Collection<Location> locations, String name, Integer currentId) {
         String normalized = name.trim().toLowerCase(Locale.ROOT);
 
         boolean exists = locations.stream()
@@ -163,7 +163,7 @@ public class LocationService extends ServiceValidationSupport {
     }
 
     public record LocationView(
-        Long id,
+        Integer id,
         String name,
         LocationType type,
         String address,

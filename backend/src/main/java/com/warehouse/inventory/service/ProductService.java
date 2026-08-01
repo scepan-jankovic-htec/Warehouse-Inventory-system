@@ -46,7 +46,7 @@ public class ProductService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public ProductDetailView findById(Collection<Product> products, Collection<Inventory> inventories, Long productId) {
+    public ProductDetailView findById(Collection<Product> products, Collection<Inventory> inventories, Integer productId) {
         Product product = resolveProduct(products, productId);
 
         List<ProductInventoryView> inventoryViews = inventories.stream()
@@ -80,7 +80,7 @@ public class ProductService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public Product update(Collection<Product> existingProducts, Collection<Category> categories, Long productId, UpdateProductRequest request) {
+    public Product update(Collection<Product> existingProducts, Collection<Category> categories, Integer productId, UpdateProductRequest request) {
         Objects.requireNonNull(existingProducts, "Products must not be null.");
         Objects.requireNonNull(categories, "Categories must not be null.");
         validate(request);
@@ -97,7 +97,7 @@ public class ProductService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void deactivate(Collection<Product> products, Long productId) {
+    public void deactivate(Collection<Product> products, Integer productId) {
         Product product = resolveProduct(products, productId);
         if (!product.isActive()) {
             throw new IllegalStateException("Product is already inactive.");
@@ -106,11 +106,11 @@ public class ProductService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void activate(Collection<Product> products, Long productId) {
+    public void activate(Collection<Product> products, Integer productId) {
         resolveProduct(products, productId).setActive(true);
     }
 
-    public Product resolveActiveProduct(Collection<Product> products, Long productId) {
+    public Product resolveActiveProduct(Collection<Product> products, Integer productId) {
         Product product = resolveProduct(products, productId);
         if (!product.isActive()) {
             throw new IllegalStateException("Product is inactive.");
@@ -118,7 +118,7 @@ public class ProductService extends ServiceValidationSupport {
         return product;
     }
 
-    private Product resolveProduct(Collection<Product> products, Long productId) {
+    private Product resolveProduct(Collection<Product> products, Integer productId) {
         Objects.requireNonNull(products, "Products must not be null.");
         Objects.requireNonNull(productId, "Product ID must not be null.");
 
@@ -128,7 +128,7 @@ public class ProductService extends ServiceValidationSupport {
             .orElseThrow(() -> new NoSuchElementException("Product not found for id=" + productId));
     }
 
-    private Category resolveActiveCategory(Collection<Category> categories, Long categoryId) {
+    private Category resolveActiveCategory(Collection<Category> categories, Integer categoryId) {
         Category category = categories.stream()
             .filter(candidate -> Objects.equals(candidate.getId(), categoryId))
             .findFirst()
@@ -140,7 +140,7 @@ public class ProductService extends ServiceValidationSupport {
         return category;
     }
 
-    private void ensureUniqueSku(Collection<Product> products, String sku, Long currentId) {
+    private void ensureUniqueSku(Collection<Product> products, String sku, Integer currentId) {
         String normalized = sku.trim().toUpperCase(Locale.ROOT);
 
         boolean exists = products.stream()
@@ -165,7 +165,7 @@ public class ProductService extends ServiceValidationSupport {
             || (product.getName() != null && product.getName().toLowerCase(Locale.ROOT).contains(normalized));
     }
 
-    private boolean matchesCategoryId(Product product, Long categoryId) {
+    private boolean matchesCategoryId(Product product, Integer categoryId) {
         return product.getCategory() != null && Objects.equals(product.getCategory().getId(), categoryId);
     }
 
@@ -240,11 +240,11 @@ public class ProductService extends ServiceValidationSupport {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    public record CategorySummary(Long id, String name) {
+    public record CategorySummary(Integer id, String name) {
     }
 
     public record ProductView(
-        Long id,
+        Integer id,
         String sku,
         String name,
         String description,
@@ -258,7 +258,7 @@ public class ProductService extends ServiceValidationSupport {
     }
 
     public record ProductInventoryView(
-        Long locationId,
+        Integer locationId,
         String locationName,
         LocationType locationType,
         int quantityOnHand,
@@ -267,7 +267,7 @@ public class ProductService extends ServiceValidationSupport {
     }
 
     public record ProductDetailView(
-        Long id,
+        Integer id,
         String sku,
         String name,
         String description,

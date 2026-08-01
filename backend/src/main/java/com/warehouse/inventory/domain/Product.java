@@ -1,12 +1,16 @@
 package com.warehouse.inventory.domain;
 
+import com.warehouse.inventory.config.BooleanToIntegerConverter;
+import com.warehouse.inventory.config.UtcIsoLocalDateTimeConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +30,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @NotBlank
     @Size(max = 100)
@@ -57,15 +61,21 @@ public class Product {
     @Column(name = "reorder_threshold", nullable = false)
     private int reorderThreshold = 0;
 
-    @Column(name = "is_active", nullable = false)
+    @Convert(converter = BooleanToIntegerConverter.class)
+    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Column(name = "is_active", nullable = false, columnDefinition = "INTEGER")
     private boolean isActive = true;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TEXT")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TEXT")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -76,7 +86,7 @@ public class Product {
 
     public Product() {}
 
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     public String getSku() { return sku; }
     public void setSku(String sku) { this.sku = sku; }

@@ -5,10 +5,10 @@ import com.warehouse.inventory.domain.enums.MovementType;
 import java.time.LocalDateTime;
 
 public record MovementHistoryQuery(
-    Long productId,
-    Long locationId,
+    Integer productId,
+    Integer locationId,
     MovementType movementType,
-    Long performedBy,
+    Integer performedBy,
     LocalDateTime dateFrom,
     LocalDateTime dateTo,
     String sortBy,

@@ -41,7 +41,7 @@ public class CategoryService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public CategoryView findById(Collection<Category> categories, Long categoryId) {
+    public CategoryView findById(Collection<Category> categories, Integer categoryId) {
         return toCategoryView(resolveCategory(categories, categoryId));
     }
 
@@ -59,7 +59,7 @@ public class CategoryService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public Category update(Collection<Category> existingCategories, Long categoryId, UpdateCategoryRequest request) {
+    public Category update(Collection<Category> existingCategories, Integer categoryId, UpdateCategoryRequest request) {
         Objects.requireNonNull(existingCategories, "Categories must not be null.");
         validate(request);
 
@@ -72,7 +72,7 @@ public class CategoryService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void deactivate(Collection<Category> categories, Long categoryId) {
+    public void deactivate(Collection<Category> categories, Integer categoryId) {
         Category category = resolveCategory(categories, categoryId);
         if (!category.isActive()) {
             throw new IllegalStateException("Category is already inactive.");
@@ -81,7 +81,7 @@ public class CategoryService extends ServiceValidationSupport {
     }
 
     @Transactional
-    public void activate(Collection<Category> categories, Long categoryId) {
+    public void activate(Collection<Category> categories, Integer categoryId) {
         Category category = resolveCategory(categories, categoryId);
         category.setActive(true);
     }
@@ -96,7 +96,7 @@ public class CategoryService extends ServiceValidationSupport {
             .count();
     }
 
-    private Category resolveCategory(Collection<Category> categories, Long categoryId) {
+    private Category resolveCategory(Collection<Category> categories, Integer categoryId) {
         Objects.requireNonNull(categories, "Categories must not be null.");
         Objects.requireNonNull(categoryId, "Category ID must not be null.");
 
@@ -106,7 +106,7 @@ public class CategoryService extends ServiceValidationSupport {
             .orElseThrow(() -> new NoSuchElementException("Category not found for id=" + categoryId));
     }
 
-    private void ensureCategoryNameUnique(Collection<Category> categories, String name, Long currentCategoryId) {
+    private void ensureCategoryNameUnique(Collection<Category> categories, String name, Integer currentCategoryId) {
         String normalized = name.trim().toLowerCase(Locale.ROOT);
 
         boolean exists = categories.stream()
@@ -157,7 +157,7 @@ public class CategoryService extends ServiceValidationSupport {
     }
 
     public record CategoryView(
-        Long id,
+        Integer id,
         String name,
         String description,
         boolean active,

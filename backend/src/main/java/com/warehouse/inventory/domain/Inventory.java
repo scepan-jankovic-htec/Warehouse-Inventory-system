@@ -1,10 +1,13 @@
 package com.warehouse.inventory.domain;
 
+import com.warehouse.inventory.config.UtcIsoLocalDateTimeConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +28,7 @@ public class Inventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -44,16 +47,20 @@ public class Inventory {
     private int quantityOnHand = 0;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TEXT")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TEXT")
     private LocalDateTime updatedAt;
 
     public Inventory() {}
 
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     public Product getProduct() { return product; }
     public void setProduct(Product product) { this.product = product; }

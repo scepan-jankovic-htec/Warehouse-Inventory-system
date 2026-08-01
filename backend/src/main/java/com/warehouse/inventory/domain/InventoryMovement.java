@@ -1,10 +1,13 @@
 package com.warehouse.inventory.domain;
 
+import com.warehouse.inventory.config.UtcIsoLocalDateTimeConverter;
 import com.warehouse.inventory.domain.enums.MovementType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +28,7 @@ public class InventoryMovement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -72,12 +75,14 @@ public class InventoryMovement {
     private AppUser performedBy;
 
     @CreationTimestamp
-    @Column(name = "performed_at", nullable = false, updatable = false)
+    @Convert(converter = UtcIsoLocalDateTimeConverter.class)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "performed_at", nullable = false, updatable = false, columnDefinition = "TEXT")
     private LocalDateTime performedAt;
 
     public InventoryMovement() {}
 
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     public Product getProduct() { return product; }
     public void setProduct(Product product) { this.product = product; }
