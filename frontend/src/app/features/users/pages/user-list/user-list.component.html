@@ -1,0 +1,80 @@
+<section class="page">
+  <header class="header">
+    <h1>Users</h1>
+    <button class="btn btn-primary" type="button" (click)="createNew()">+ New User</button>
+  </header>
+
+  <section class="filters">
+    <input
+      class="control"
+      type="text"
+      placeholder="Search by username or full name"
+      [value]="search()"
+      (input)="onSearchInput($event)"
+    />
+
+    <select class="control" [value]="roleFilter()" (change)="onRoleChange($event)">
+      <option value="">All roles</option>
+      <option *ngFor="let role of roleOptions" [value]="role">{{ role }}</option>
+    </select>
+
+    <label class="active-only">
+      <input type="checkbox" [checked]="activeOnly()" (change)="onActiveToggle()" />
+      Active only
+    </label>
+  </section>
+
+  <app-loading-spinner *ngIf="isLoading()" message="Loading users..." />
+
+  <app-empty-state
+    *ngIf="!isLoading() && users().length === 0"
+    title="No users found"
+    description="Try changing filters or create a new user account."
+  />
+
+  <section class="table-wrapper" *ngIf="!isLoading() && users().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" (click)="onSort('username')">Username {{ sortMarker('username') }}</th>
+          <th class="sortable" (click)="onSort('fullName')">Full Name {{ sortMarker('fullName') }}</th>
+          <th>Email</th>
+          <th class="sortable" (click)="onSort('role')">Role {{ sortMarker('role') }}</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users()">
+          <td>{{ user.username }}</td>
+          <td>{{ user.fullName }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <app-status-badge
+              [value]="user.active ? 'ACTIVE' : 'INACTIVE'"
+              [label]="user.active ? 'Active' : 'Inactive'"
+            />
+          </td>
+          <td class="actions">
+            <button class="btn" type="button" (click)="edit(user)">Edit</button>
+            <button class="btn" type="button" (click)="toggleActive(user)">
+              {{ user.active ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <app-pagination
+    *ngIf="!isLoading() && users().length > 0"
+    [page]="currentPage()"
+    [totalPages]="totalPages()"
+    [totalElements]="totalElements()"
+    (previous)="goPrevious()"
+    (next)="goNext()"
+  />
+
+  <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+</section>

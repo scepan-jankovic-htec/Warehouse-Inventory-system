@@ -1,0 +1,103 @@
+<section class="page">
+  <header class="header">
+    <h1>Inventory History</h1>
+  </header>
+
+  <section class="filters">
+    <select class="control" [value]="selectedProductId()" (change)="onProductChange($event)">
+      <option value="">All products</option>
+      <option *ngFor="let product of productOptions()" [value]="product.id">
+        {{ product.sku }} — {{ product.name }}
+      </option>
+    </select>
+
+    <select class="control" [value]="selectedLocationId()" (change)="onLocationChange($event)">
+      <option value="">All locations</option>
+      <option *ngFor="let location of locationOptions()" [value]="location.id">
+        {{ location.name }} ({{ location.type }})
+      </option>
+    </select>
+
+    <select class="control" [value]="selectedMovementType()" (change)="onMovementTypeChange($event)">
+      <option value="">All movement types</option>
+      <option value="RECEIVE">Receive</option>
+      <option value="TRANSFER_OUT">Transfer out</option>
+      <option value="TRANSFER_IN">Transfer in</option>
+      <option value="ADJUSTMENT">Adjustment</option>
+    </select>
+
+    <input
+      class="control"
+      type="date"
+      aria-label="From date"
+      [value]="dateFrom()"
+      (change)="onDateFromChange($event)"
+    />
+
+    <input
+      class="control"
+      type="date"
+      aria-label="To date"
+      [value]="dateTo()"
+      (change)="onDateToChange($event)"
+    />
+
+    <button class="btn" type="button" (click)="applyFilters()">Apply</button>
+    <button class="btn secondary" type="button" (click)="clearFilters()">Clear</button>
+  </section>
+
+  <app-loading-spinner *ngIf="isLoading()" message="Loading movement history..." />
+
+  <app-empty-state
+    *ngIf="!isLoading() && history().length === 0"
+    title="No movement history"
+    description="No inventory movements match the selected filters."
+  />
+
+  <section class="table-wrapper" *ngIf="!isLoading() && history().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" (click)="onSort('performedAt')">When {{ sortMarker('performedAt') }}</th>
+          <th>Type</th>
+          <th>Product</th>
+          <th>Location</th>
+          <th class="num sortable" (click)="onSort('quantityDelta')">Delta {{ sortMarker('quantityDelta') }}</th>
+          <th>Actor</th>
+          <th>Reference / Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movement of history()">
+          <td>{{ formatDateTime(movement.performedAt) }}</td>
+          <td>
+            <span class="type-badge" [ngClass]="movementTypeClass(movement.movementType)">
+              {{ formatMovementType(movement.movementType) }}
+            </span>
+          </td>
+          <td>{{ movement.product.sku }} — {{ movement.product.name }}</td>
+          <td>{{ movement.location.name }}</td>
+          <td class="num" [class.positive]="movement.quantityDelta > 0" [class.negative]="movement.quantityDelta < 0">
+            {{ signedDelta(movement.quantityDelta) }}
+          </td>
+          <td>{{ movement.performedBy.fullName || movement.performedBy.username }}</td>
+          <td>
+            {{ movement.referenceId || '—' }}
+            <span *ngIf="movement.reason"> · {{ movement.reason }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <app-pagination
+    *ngIf="!isLoading() && history().length > 0"
+    [page]="currentPage()"
+    [totalPages]="totalPages()"
+    [totalElements]="totalElements()"
+    (previous)="goPrevious()"
+    (next)="goNext()"
+  />
+
+  <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+</section>

@@ -1,0 +1,128 @@
+<div class="category-list-container">
+  <!-- Header -->
+  <div class="list-header">
+    <h1>Categories</h1>
+    <button class="btn btn-primary" (click)="createNew()">
+      ➕ New Category
+    </button>
+  </div>
+
+  <!-- Filter and Search -->
+  <div class="filter-bar">
+    <div class="search-group">
+      <input
+        type="text"
+        placeholder="Search by name..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($event)"
+        class="search-input"
+      />
+    </div>
+    <div class="filter-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          [checked]="activeOnly()"
+          (change)="toggleActiveFilter()"
+          class="checkbox"
+        />
+        <span>Active only</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-spinner">
+    ⏳ Loading categories...
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading() && filteredCategories().length === 0" class="empty-state">
+    <p>No categories found</p>
+    <button class="btn btn-secondary" (click)="createNew()">
+      Create your first category
+    </button>
+  </div>
+
+  <!-- Categories Table -->
+  <div *ngIf="!isLoading() && filteredCategories().length > 0" class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="sortable-header" (click)="toggleSort('name')">
+            Name
+            <span class="sort-indicator">{{ getSortIndicator('name') }}</span>
+          </th>
+          <th>Description</th>
+          <th class="sortable-header" (click)="toggleSort('createdAt')">
+            Created
+            <span class="sort-indicator">{{ getSortIndicator('createdAt') }}</span>
+          </th>
+          <th class="numeric">Products</th>
+          <th class="center">Status</th>
+          <th class="center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of paginatedCategories()">
+          <td class="bold">{{ category.name }}</td>
+          <td class="truncate">{{ category.description || '—' }}</td>
+          <td class="small">{{ formatDate(category.createdAt) }}</td>
+          <td class="numeric">{{ category.productCount }}</td>
+          <td class="center">
+            <span
+              class="badge"
+              [ngClass]="{ 'badge-active': category.active, 'badge-inactive': !category.active }"
+            >
+              {{ category.active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="center">
+            <button
+              class="btn btn-sm btn-secondary"
+              (click)="editCategory(category)"
+              title="Edit category"
+            >
+              ✏️
+            </button>
+            <button
+              class="btn btn-sm"
+              [ngClass]="{ 'btn-warning': category.active, 'btn-success': !category.active }"
+              (click)="toggleActive(category)"
+              [title]="category.active ? 'Deactivate' : 'Activate'"
+            >
+              {{ category.active ? '🔴' : '🟢' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!isLoading() && filteredCategories().length > 0" class="pagination-container">
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="currentPage() <= 1"
+    >
+      ← Previous
+    </button>
+    <span class="pagination-info">
+      Page {{ currentPage() }} of {{ totalPages() }}
+      ({{ filteredCategories().length }} total)
+    </span>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="currentPage() >= totalPages()"
+    >
+      Next →
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage()" class="error-banner">
+    ❌ {{ errorMessage() }}
+  </div>
+</div>

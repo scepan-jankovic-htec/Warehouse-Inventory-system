@@ -1,0 +1,81 @@
+<section class="page">
+  <header class="header">
+    <h1>Locations</h1>
+    <button class="btn btn-primary" type="button" (click)="createNew()">+ New Location</button>
+  </header>
+
+  <section class="filters">
+    <input
+      class="control"
+      type="text"
+      placeholder="Search by name"
+      [value]="search()"
+      (input)="onSearchInput($event)"
+    />
+
+    <select class="control" [value]="typeFilter()" (change)="onTypeChange($event)">
+      <option value="">All types</option>
+      <option value="WAREHOUSE">Warehouse</option>
+      <option value="STORE">Store</option>
+    </select>
+
+    <label class="active-only">
+      <input type="checkbox" [checked]="activeOnly()" (change)="onActiveToggle()" />
+      Active only
+    </label>
+  </section>
+
+  <app-loading-spinner *ngIf="isLoading()" message="Loading locations..." />
+
+  <app-empty-state
+    *ngIf="!isLoading() && locations().length === 0"
+    title="No locations found"
+    description="Try changing filters or create a new location."
+  />
+
+  <section class="table-wrapper" *ngIf="!isLoading() && locations().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" (click)="onSort('name')">Name {{ sortMarker('name') }}</th>
+          <th class="sortable" (click)="onSort('type')">Type {{ sortMarker('type') }}</th>
+          <th>Address</th>
+          <th>Status</th>
+          <th class="sortable" (click)="onSort('createdAt')">Created {{ sortMarker('createdAt') }}</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let location of locations()">
+          <td>{{ location.name }}</td>
+          <td>{{ location.type }}</td>
+          <td>{{ location.address || '—' }}</td>
+          <td>
+            <app-status-badge
+              [value]="location.active ? 'ACTIVE' : 'INACTIVE'"
+              [label]="location.active ? 'Active' : 'Inactive'"
+            />
+          </td>
+          <td>{{ formatDate(location.createdAt) }}</td>
+          <td class="actions">
+            <button class="btn" type="button" (click)="edit(location)">Edit</button>
+            <button class="btn" type="button" (click)="toggleActive(location)">
+              {{ location.active ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <app-pagination
+    *ngIf="!isLoading() && locations().length > 0"
+    [page]="currentPage()"
+    [totalPages]="totalPages()"
+    [totalElements]="totalElements()"
+    (previous)="goPrevious()"
+    (next)="goNext()"
+  />
+
+  <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+</section>

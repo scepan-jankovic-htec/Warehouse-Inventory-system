@@ -1,0 +1,78 @@
+<section class="page">
+  <header class="header">
+    <h1>Transfer Stock</h1>
+    <button type="button" class="btn" (click)="goBack()">← Back</button>
+  </header>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="grid">
+      <div class="field full-width">
+        <label for="productId">Product *</label>
+        <select id="productId" formControlName="productId" (change)="refreshQuantities()">
+          <option [ngValue]="null">Select product</option>
+          <option *ngFor="let product of products()" [ngValue]="product.id">
+            {{ product.sku }} — {{ product.name }}
+          </option>
+        </select>
+        <small *ngIf="showError('productId', 'required')">Product is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="sourceLocationId">Source location *</label>
+        <select id="sourceLocationId" formControlName="sourceLocationId" (change)="refreshQuantities()">
+          <option [ngValue]="null">Select source</option>
+          <option *ngFor="let location of locations()" [ngValue]="location.id">
+            {{ location.name }} ({{ location.type }})
+          </option>
+        </select>
+        <small *ngIf="showError('sourceLocationId', 'required')">Source is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="destinationLocationId">Destination location *</label>
+        <select id="destinationLocationId" formControlName="destinationLocationId" (change)="refreshQuantities()">
+          <option [ngValue]="null">Select destination</option>
+          <option *ngFor="let location of locations()" [ngValue]="location.id">
+            {{ location.name }} ({{ location.type }})
+          </option>
+        </select>
+        <small *ngIf="showError('destinationLocationId', 'required')">Destination is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="quantity">Quantity *</label>
+        <input id="quantity" type="number" min="1" formControlName="quantity" />
+        <small *ngIf="showError('quantity', 'required')">Quantity is required.</small>
+        <small *ngIf="showError('quantity', 'min')">Quantity must be greater than 0.</small>
+      </div>
+
+      <div class="field">
+        <label for="referenceId">Reference ID</label>
+        <input id="referenceId" type="text" maxlength="100" formControlName="referenceId" />
+        <small *ngIf="showError('referenceId', 'maxlength')">Reference must be at most 100 characters.</small>
+      </div>
+
+      <div class="field full-width">
+        <label for="reason">Reason</label>
+        <textarea id="reason" rows="3" maxlength="500" formControlName="reason"></textarea>
+        <small *ngIf="showError('reason', 'maxlength')">Reason must be at most 500 characters.</small>
+      </div>
+    </div>
+
+    <p class="info">Current source quantity: <strong>{{ sourceCurrentQuantity() }}</strong></p>
+    <p class="info">Current destination quantity: <strong>{{ destinationCurrentQuantity() }}</strong></p>
+    <p class="info">Source quantity after transfer: <strong>{{ sourceProjectedQuantity() }}</strong></p>
+
+    <p class="error" *ngIf="form.hasError('sameLocation')">Source and destination must differ.</p>
+    <p class="error" *ngIf="form.hasError('insufficientClientStock')">Transfer quantity exceeds source stock.</p>
+
+    <div class="actions">
+      <button type="button" class="btn" (click)="goBack()">Cancel</button>
+      <button class="btn btn-primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+        {{ isSubmitting() ? 'Saving...' : 'Decrease/Increase Stock' }}
+      </button>
+    </div>
+
+    <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+  </form>
+</section>
