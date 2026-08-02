@@ -146,7 +146,7 @@ The domain layer contains entities and enumerations. It has no dependencies on a
 | Entity | Maps to | Description |
 |---|---|---|
 | `Category` | `category` table | Product classification |
-| `Product` | `product` table | Catalog item with SKU, name, and reorder threshold |
+| `Product` | `product` table | Catalog item with SKU, name, EUR price, and reorder threshold |
 | `Location` | `location` table | Physical warehouse or store location |
 | `Inventory` | `inventory` table | On-hand quantity per product-location pair |
 | `InventoryMovement` | `inventory_movement` table | Immutable record of every stock change |
@@ -259,6 +259,7 @@ All request DTOs are annotated with Bean Validation constraints. These are evalu
 | `@NotBlank` | All required string fields (name, SKU, reason, etc.) |
 | `@NotNull` | All required non-string fields (IDs, quantities) |
 | `@Size(max = N)` | All string fields with maximum length defined in the database design |
+| `@DecimalMin(value = "0.00")` | `price` |
 | `@Min(value = 0)` | `reorderThreshold` |
 | `@Min(value = 1)` | `quantity` fields for receive and transfer |
 | `@NotZero` (custom) | `quantityDelta` in `AdjustStockRequest` |

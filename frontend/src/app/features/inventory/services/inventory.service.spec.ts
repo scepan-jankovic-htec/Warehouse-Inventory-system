@@ -12,7 +12,7 @@ describe('InventoryService', () => {
             data: [
               {
                 id: 1,
-                product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery', unitOfMeasure: 'PACK', reorderThreshold: 50 },
+                product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery', unitOfMeasure: 'PACK', price: 4.99, reorderThreshold: 50 },
                 location: { id: 1, name: 'Warehouse A', type: 'WAREHOUSE' },
                 quantityOnHand: 120,
                 stockStatus: 'IN_STOCK',

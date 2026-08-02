@@ -54,6 +54,13 @@
       </div>
 
       <div class="field">
+        <label for="price">Price (EUR) *</label>
+        <input id="price" type="number" min="0" step="0.01" formControlName="price" />
+        <small *ngIf="showError('price', 'required')">Price is required.</small>
+        <small *ngIf="showError('price', 'min')">Price must be 0 or greater.</small>
+      </div>
+
+      <div class="field">
         <label for="reorderThreshold">Reorder threshold</label>
         <input id="reorderThreshold" type="number" min="0" formControlName="reorderThreshold" />
         <small *ngIf="showError('reorderThreshold', 'min')">Reorder threshold must be 0 or greater.</small>

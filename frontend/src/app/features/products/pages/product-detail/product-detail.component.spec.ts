@@ -15,6 +15,7 @@ function makeProductDetail(): ProductDetailResponse {
     description: 'Test product',
     category: { id: 1, name: 'Electronics' },
     unitOfMeasure: 'PCS',
+    price: 9.99,
     reorderThreshold: 3,
     active: true,
     inventory: [

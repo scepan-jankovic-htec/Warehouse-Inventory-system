@@ -13,6 +13,8 @@ import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -78,6 +80,7 @@ public class ProductService extends ServiceValidationSupport {
         product.setDescription(normalizeNullableText(request.description()));
         product.setCategory(category);
         product.setUnitOfMeasure(request.unitOfMeasure().trim().toUpperCase(Locale.ROOT));
+        product.setPrice(normalizePrice(request.price()));
         product.setReorderThreshold(request.reorderThreshold() == null ? 0 : request.reorderThreshold());
         product.setActive(true);
         return productRepository.save(product);
@@ -96,6 +99,7 @@ public class ProductService extends ServiceValidationSupport {
         product.setDescription(normalizeNullableText(request.description()));
         product.setCategory(category);
         product.setUnitOfMeasure(request.unitOfMeasure().trim().toUpperCase(Locale.ROOT));
+        product.setPrice(normalizePrice(request.price()));
         product.setReorderThreshold(request.reorderThreshold() == null ? 0 : request.reorderThreshold());
         return productRepository.save(product);
     }
@@ -119,6 +123,16 @@ public class ProductService extends ServiceValidationSupport {
 
     public Product resolveActiveProduct(Collection<Product> products, Integer productId) {
         Product product = resolveProduct(products, productId);
+        if (!product.isActive()) {
+            throw new IllegalStateException("Product is inactive.");
+        }
+        return product;
+    }
+
+    public Product resolveActiveProduct(Integer productId) {
+        Objects.requireNonNull(productId, "Product ID must not be null.");
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new NoSuchElementException("Product not found for id=" + productId));
         if (!product.isActive()) {
             throw new IllegalStateException("Product is inactive.");
         }
@@ -197,6 +211,7 @@ public class ProductService extends ServiceValidationSupport {
             new CategorySummary(product.getCategory() == null ? null : product.getCategory().getId(),
                 product.getCategory() == null ? null : product.getCategory().getName()),
             product.getUnitOfMeasure(),
+            product.getPrice(),
             product.getReorderThreshold(),
             product.isActive(),
             product.getCreatedAt(),
@@ -213,6 +228,7 @@ public class ProductService extends ServiceValidationSupport {
             new CategorySummary(product.getCategory() == null ? null : product.getCategory().getId(),
                 product.getCategory() == null ? null : product.getCategory().getName()),
             product.getUnitOfMeasure(),
+            product.getPrice(),
             product.getReorderThreshold(),
             product.isActive(),
             inventory,
@@ -247,6 +263,10 @@ public class ProductService extends ServiceValidationSupport {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
+    private BigDecimal normalizePrice(BigDecimal price) {
+        return price == null ? BigDecimal.ZERO : price.setScale(2, RoundingMode.HALF_UP);
+    }
+
     public record CategorySummary(Integer id, String name) {
     }
 
@@ -257,6 +277,7 @@ public class ProductService extends ServiceValidationSupport {
         String description,
         CategorySummary category,
         String unitOfMeasure,
+        BigDecimal price,
         int reorderThreshold,
         boolean active,
         LocalDateTime createdAt,
@@ -280,6 +301,7 @@ public class ProductService extends ServiceValidationSupport {
         String description,
         CategorySummary category,
         String unitOfMeasure,
+        BigDecimal price,
         int reorderThreshold,
         boolean active,
         List<ProductInventoryView> inventory,

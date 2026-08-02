@@ -29,6 +29,7 @@ function createProduct(id: number, name: string): ProductResponse {
     description: null,
     category: { id: 1, name: 'Category' },
     unitOfMeasure: 'EA',
+    price: 2.99,
     reorderThreshold: 5,
     active: true,
     createdAt: '2026-08-01T10:00:00',

@@ -33,6 +33,7 @@ describe('DashboardService', () => {
                 description: null,
                 category: { id: 1, name: 'Electronics' },
                 unitOfMeasure: 'PACK',
+                price: 4.99,
                 reorderThreshold: 50,
                 active: true,
                 createdAt: '2026-08-01T00:00:00Z',
@@ -45,6 +46,7 @@ describe('DashboardService', () => {
                 description: null,
                 category: { id: 2, name: 'Stationery' },
                 unitOfMeasure: 'PCS',
+                price: 1.25,
                 reorderThreshold: 20,
                 active: true,
                 createdAt: '2026-08-01T00:00:00Z',
@@ -62,7 +64,7 @@ describe('DashboardService', () => {
               data: [
                 {
                   id: 100,
-                  product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', reorderThreshold: 50 },
+                  product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', price: 4.99, reorderThreshold: 50 },
                   location: { id: 1, name: 'Warehouse A', type: 'WAREHOUSE' },
                   quantityOnHand: 120,
                   stockStatus: 'IN_STOCK',
@@ -77,7 +79,7 @@ describe('DashboardService', () => {
             data: [
               {
                 id: 101,
-                product: { id: 11, sku: 'PEN-BLUE', name: 'Blue Pen', unitOfMeasure: 'PCS', reorderThreshold: 20 },
+                product: { id: 11, sku: 'PEN-BLUE', name: 'Blue Pen', unitOfMeasure: 'PCS', price: 1.25, reorderThreshold: 20 },
                 location: { id: 1, name: 'Warehouse A', type: 'WAREHOUSE' },
                 quantityOnHand: 30,
                 stockStatus: 'IN_STOCK',

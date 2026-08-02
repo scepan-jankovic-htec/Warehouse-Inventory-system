@@ -28,6 +28,7 @@ function createComponent(routeId?: string, createThrowsConflict = false): {
           description: null,
           category: { id: 1, name: 'Electronics' },
           unitOfMeasure: 'PACK',
+          price: 4.99,
           reorderThreshold: 50,
           active: true,
           inventory: [],
@@ -152,6 +153,7 @@ describe('ProductFormComponent', () => {
             description: null,
             category: { id: 1, name: 'Electronics' },
             unitOfMeasure: 'PACK',
+            price: 4.99,
             reorderThreshold: 50,
             active: true,
             inventory: [],
@@ -330,6 +332,7 @@ describe('ProductFormComponent', () => {
       description: 'Notes',
       categoryId: 1,
       unitOfMeasure: 'PCS',
+      price: 11.25,
       reorderThreshold: 7,
     });
 
@@ -342,6 +345,7 @@ describe('ProductFormComponent', () => {
       description: 'Notes',
       categoryId: 1,
       unitOfMeasure: 'PCS',
+      price: 11.25,
       reorderThreshold: 7,
     });
     expect(routerMock.navigate).toHaveBeenCalledWith(['/products', 10]);
@@ -357,6 +361,7 @@ describe('ProductFormComponent', () => {
       description: '   ',
       categoryId: 1,
       unitOfMeasure: 'PCS',
+      price: 5,
       reorderThreshold: 0,
     });
 
@@ -368,6 +373,7 @@ describe('ProductFormComponent', () => {
       description: undefined,
       categoryId: 1,
       unitOfMeasure: 'PCS',
+      price: 5,
       reorderThreshold: 0,
     });
   });
@@ -381,6 +387,7 @@ describe('ProductFormComponent', () => {
       description: ' Updated notes ',
       categoryId: 1,
       unitOfMeasure: ' BOX ',
+      price: 7.5,
       reorderThreshold: 3,
     });
 
@@ -391,6 +398,7 @@ describe('ProductFormComponent', () => {
       description: 'Updated notes',
       categoryId: 1,
       unitOfMeasure: 'BOX',
+      price: 7.5,
       reorderThreshold: 3,
     });
     expect(routerMock.navigate).toHaveBeenCalledWith(['/products', 10]);

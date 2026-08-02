@@ -45,6 +45,10 @@
         <dd>{{ detail.unitOfMeasure }}</dd>
       </div>
       <div>
+        <dt>Price (EUR)</dt>
+        <dd>{{ detail.price | number:'1.2-2' }}</dd>
+      </div>
+      <div>
         <dt>Reorder threshold</dt>
         <dd>{{ detail.reorderThreshold }}</dd>
       </div>

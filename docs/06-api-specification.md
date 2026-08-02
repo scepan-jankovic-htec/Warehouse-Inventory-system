@@ -342,6 +342,7 @@ Returns a paginated list of products.
         "name": "Electronics"
       },
       "unitOfMeasure": "PACK",
+      "price": 4.99,
       "reorderThreshold": 50,
       "active": true,
       "createdAt": "2026-07-10T09:00:00Z",
@@ -379,6 +380,7 @@ Returns a single product by ID, including current inventory by location.
       "name": "Electronics"
     },
     "unitOfMeasure": "PACK",
+    "price": 4.99,
     "reorderThreshold": 50,
     "active": true,
     "inventory": [
@@ -424,6 +426,7 @@ Creates a new product.
   "description": "Alkaline AA batteries, pack of 4",
   "categoryId": 3,
   "unitOfMeasure": "PACK",
+  "price": 4.99,
   "reorderThreshold": 50
 }
 ```
@@ -435,6 +438,7 @@ Creates a new product.
 | `description` | string | No | Max 1000 characters |
 | `categoryId` | integer | Yes | Must reference an existing, active category |
 | `unitOfMeasure` | string | Yes | Not blank, max 20 characters |
+| `price` | number | Yes | ≥ 0, EUR |
 | `reorderThreshold` | integer | No | ≥ 0. Default: 0 |
 
 **Response `201 Created`:** Created product object (same shape as `GET /api/products/{id}`, with empty `inventory` array).
@@ -458,6 +462,7 @@ Updates an existing product. SKU cannot be changed.
   "description": "Updated description",
   "categoryId": 3,
   "unitOfMeasure": "PACK",
+  "price": 5.49,
   "reorderThreshold": 60
 }
 ```
@@ -468,6 +473,7 @@ Updates an existing product. SKU cannot be changed.
 | `description` | string | No | Max 1000 characters |
 | `categoryId` | integer | Yes | Must reference an existing, active category |
 | `unitOfMeasure` | string | Yes | Not blank, max 20 characters |
+| `price` | number | Yes | ≥ 0, EUR |
 | `reorderThreshold` | integer | No | ≥ 0 |
 
 **Response `200 OK`:** Updated product object.
@@ -657,6 +663,7 @@ Returns a paginated inventory view — one row per product-location combination.
         "sku": "BAT-AA-4P",
         "name": "AA Battery 4-Pack",
         "unitOfMeasure": "PACK",
+        "price": 4.99,
         "reorderThreshold": 50
       },
       "location": {

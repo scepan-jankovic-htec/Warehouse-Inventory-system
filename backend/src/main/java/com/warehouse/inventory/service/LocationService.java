@@ -103,6 +103,16 @@ public class LocationService extends ServiceValidationSupport {
         return location;
     }
 
+    public Location resolveActiveLocation(Integer locationId) {
+        Objects.requireNonNull(locationId, "Location ID must not be null.");
+        Location location = locationRepository.findById(locationId)
+            .orElseThrow(() -> new NoSuchElementException("Location not found for id=" + locationId));
+        if (!location.isActive()) {
+            throw new IllegalStateException("Location is inactive.");
+        }
+        return location;
+    }
+
     private Location resolveLocation(Collection<Location> locations, Integer locationId) {
         Objects.requireNonNull(locations, "Locations must not be null.");
         Objects.requireNonNull(locationId, "Location ID must not be null.");

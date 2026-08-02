@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS product (
     description TEXT,
     category_id INTEGER NOT NULL,
     unit_of_measure TEXT NOT NULL,
+    price NUMERIC NOT NULL DEFAULT 0 CHECK (price >= 0),
     reorder_threshold INTEGER NOT NULL DEFAULT 0 CHECK (reorder_threshold >= 0),
     is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),

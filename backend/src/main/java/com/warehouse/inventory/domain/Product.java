@@ -3,6 +3,7 @@ package com.warehouse.inventory.domain;
 import com.warehouse.inventory.config.BooleanToIntegerConverter;
 import com.warehouse.inventory.config.UtcIsoLocalDateTimeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,11 @@ public class Product {
     @Size(max = 50)
     @Column(name = "unit_of_measure", nullable = false)
     private String unitOfMeasure;
+
+    @NotNull
+    @DecimalMin("0.00")
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Min(0)
     @Column(name = "reorder_threshold", nullable = false)
@@ -102,6 +109,9 @@ public class Product {
 
     public String getUnitOfMeasure() { return unitOfMeasure; }
     public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
     public int getReorderThreshold() { return reorderThreshold; }
     public void setReorderThreshold(int reorderThreshold) { this.reorderThreshold = reorderThreshold; }

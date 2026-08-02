@@ -9,7 +9,7 @@ import { InventoryOverviewComponent } from './inventory-overview.component';
 describe('InventoryOverviewComponent', () => {
   const mockInventoryRow = {
     id: 1,
-    product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', reorderThreshold: 50 },
+    product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', price: 4.99, reorderThreshold: 50 },
     location: { id: 1, name: 'Warehouse A', type: 'WAREHOUSE' },
     quantityOnHand: 20,
     stockStatus: 'LOW_STOCK',
@@ -18,7 +18,7 @@ describe('InventoryOverviewComponent', () => {
 
   const mockMovement = {
     id: 1,
-    product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', reorderThreshold: 50 },
+    product: { id: 10, sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', unitOfMeasure: 'PACK', price: 4.99, reorderThreshold: 50 },
     location: { id: 1, name: 'Warehouse A', type: 'WAREHOUSE' },
     quantityDelta: 10,
     movementType: 'RECEIVE',

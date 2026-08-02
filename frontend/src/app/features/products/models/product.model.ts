@@ -20,6 +20,7 @@ export interface ProductResponse {
 	description: string | null;
 	category: ProductCategoryResponse;
 	unitOfMeasure: string;
+	price: number;
 	reorderThreshold: number;
 	active: boolean;
 	createdAt: string;
@@ -36,6 +37,7 @@ export interface ProductCreateRequest {
 	description?: string;
 	categoryId: number;
 	unitOfMeasure: string;
+	price: number;
 	reorderThreshold?: number;
 }
 
@@ -44,5 +46,6 @@ export interface ProductUpdateRequest {
 	description?: string;
 	categoryId: number;
 	unitOfMeasure: string;
+	price: number;
 	reorderThreshold?: number;
 }

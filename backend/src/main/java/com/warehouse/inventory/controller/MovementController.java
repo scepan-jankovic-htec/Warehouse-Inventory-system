@@ -1,19 +1,11 @@
 package com.warehouse.inventory.controller;
 
 import com.warehouse.inventory.domain.AppUser;
-import com.warehouse.inventory.domain.Inventory;
-import com.warehouse.inventory.domain.InventoryMovement;
-import com.warehouse.inventory.domain.Location;
-import com.warehouse.inventory.domain.Product;
 import com.warehouse.inventory.domain.enums.MovementType;
 import com.warehouse.inventory.dto.request.AdjustStockRequest;
 import com.warehouse.inventory.dto.request.ReceiveStockRequest;
 import com.warehouse.inventory.dto.request.TransferStockRequest;
 import com.warehouse.inventory.dto.response.DataResponse;
-import com.warehouse.inventory.repository.InventoryMovementRepository;
-import com.warehouse.inventory.repository.InventoryRepository;
-import com.warehouse.inventory.repository.LocationRepository;
-import com.warehouse.inventory.repository.ProductRepository;
 import com.warehouse.inventory.repository.UserRepository;
 import com.warehouse.inventory.service.MovementHistoryQuery;
 import com.warehouse.inventory.service.MovementService;
@@ -37,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * REST controller for {@code /inventory/movements}.
@@ -52,24 +43,12 @@ import java.util.List;
 public class MovementController {
 
     private final MovementService movementService;
-    private final ProductRepository productRepository;
-    private final LocationRepository locationRepository;
-    private final InventoryRepository inventoryRepository;
-    private final InventoryMovementRepository movementRepository;
     private final UserRepository userRepository;
 
     public MovementController(
             MovementService movementService,
-            ProductRepository productRepository,
-            LocationRepository locationRepository,
-            InventoryRepository inventoryRepository,
-            InventoryMovementRepository movementRepository,
             UserRepository userRepository) {
         this.movementService = movementService;
-        this.productRepository = productRepository;
-        this.locationRepository = locationRepository;
-        this.inventoryRepository = inventoryRepository;
-        this.movementRepository = movementRepository;
         this.userRepository = userRepository;
     }
 
@@ -83,12 +62,8 @@ public class MovementController {
     public ResponseEntity<DataResponse<MovementResult>> receive(
             @Valid @RequestBody ReceiveStockRequest request) {
 
-        List<Product> products = productRepository.findAll();
-        List<Location> locations = locationRepository.findAll();
-        List<Inventory> inventories = inventoryRepository.findAll();
         AppUser actor = resolveCurrentActor();
-
-        MovementResult result = movementService.receive(products, locations, inventories, actor, request);
+        MovementResult result = movementService.receive(actor, request);
         return ResponseEntity.status(201).body(DataResponse.of(result));
     }
 
@@ -102,12 +77,8 @@ public class MovementController {
     public ResponseEntity<DataResponse<TransferResult>> transfer(
             @Valid @RequestBody TransferStockRequest request) {
 
-        List<Product> products = productRepository.findAll();
-        List<Location> locations = locationRepository.findAll();
-        List<Inventory> inventories = inventoryRepository.findAll();
         AppUser actor = resolveCurrentActor();
-
-        TransferResult result = movementService.transfer(products, locations, inventories, actor, request);
+        TransferResult result = movementService.transfer(actor, request);
         return ResponseEntity.status(201).body(DataResponse.of(result));
     }
 
@@ -122,12 +93,8 @@ public class MovementController {
     public ResponseEntity<DataResponse<MovementResult>> adjust(
             @Valid @RequestBody AdjustStockRequest request) {
 
-        List<Product> products = productRepository.findAll();
-        List<Location> locations = locationRepository.findAll();
-        List<Inventory> inventories = inventoryRepository.findAll();
         AppUser actor = resolveCurrentActor();
-
-        MovementResult result = movementService.adjust(products, locations, inventories, actor, request);
+        MovementResult result = movementService.adjust(actor, request);
         return ResponseEntity.status(201).body(DataResponse.of(result));
     }
 
@@ -150,8 +117,7 @@ public class MovementController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
 
-        List<InventoryMovement> movements = movementRepository.findAll();
-        PageResult<HistoryView> result = movementService.findAll(movements,
+        PageResult<HistoryView> result = movementService.findAll(
                 new MovementHistoryQuery(
                         productId, locationId, movementType, performedBy,
                         dateFrom, dateTo, sortBy, sortDir, page, size));
@@ -165,8 +131,7 @@ public class MovementController {
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<HistoryView>> findById(@PathVariable Integer id) {
-        List<InventoryMovement> movements = movementRepository.findAll();
-        HistoryView view = movementService.findById(movements, id);
+        HistoryView view = movementService.findById(id);
         return ResponseEntity.ok(DataResponse.of(view));
     }
 

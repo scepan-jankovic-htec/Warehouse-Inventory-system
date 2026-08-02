@@ -1,0 +1,2 @@
+ALTER TABLE product
+ADD COLUMN price NUMERIC NOT NULL DEFAULT 0 CHECK (price >= 0);

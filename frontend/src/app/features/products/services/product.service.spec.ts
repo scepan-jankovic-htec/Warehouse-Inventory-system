@@ -43,6 +43,7 @@ describe('ProductService', () => {
               description: null,
               category: { id: 3, name: 'Electronics' },
               unitOfMeasure: 'PACK',
+              price: 4.99,
               reorderThreshold: 10,
               active: true,
               createdAt: '2026-08-01T10:00:00Z',
@@ -92,6 +93,7 @@ describe('ProductService', () => {
       description: null,
       category: { id: 3, name: 'Electronics' },
       unitOfMeasure: 'PACK',
+      price: 4.99,
       reorderThreshold: 10,
       active: true,
       inventory: [],
@@ -123,20 +125,22 @@ describe('ProductService', () => {
 
     const service = new ProductService(httpClientMock as never);
 
-    service.createProduct({ sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', categoryId: 3, unitOfMeasure: 'PACK', reorderThreshold: 10 }).subscribe();
-    service.updateProduct(1, { name: 'AA Battery 8-Pack', categoryId: 3, unitOfMeasure: 'PACK', reorderThreshold: 20 }).subscribe();
+    service.createProduct({ sku: 'BAT-AA-4P', name: 'AA Battery 4-Pack', categoryId: 3, unitOfMeasure: 'PACK', price: 4.99, reorderThreshold: 10 }).subscribe();
+    service.updateProduct(1, { name: 'AA Battery 8-Pack', categoryId: 3, unitOfMeasure: 'PACK', price: 6.99, reorderThreshold: 20 }).subscribe();
 
     expect(httpClientMock.post).toHaveBeenCalledWith(expect.stringContaining('/products'), {
       sku: 'BAT-AA-4P',
       name: 'AA Battery 4-Pack',
       categoryId: 3,
       unitOfMeasure: 'PACK',
+      price: 4.99,
       reorderThreshold: 10,
     });
     expect(httpClientMock.put).toHaveBeenCalledWith(expect.stringContaining('/products/1'), {
       name: 'AA Battery 8-Pack',
       categoryId: 3,
       unitOfMeasure: 'PACK',
+      price: 6.99,
       reorderThreshold: 20,
     });
   });
@@ -153,6 +157,7 @@ describe('ProductService', () => {
               description: null,
               category: { id: 1, name: 'General' },
               unitOfMeasure: 'PCS',
+              price: 2.50,
               reorderThreshold: 5,
               active: true,
               createdAt: '2026-08-01T10:00:00Z',
@@ -188,6 +193,7 @@ describe('ProductService', () => {
               description: null,
               category: { id: 1, name: 'General' },
               unitOfMeasure: 'PCS',
+              price: 2.50,
               reorderThreshold: 5,
               active: false,
               createdAt: '2026-08-01T10:00:00Z',

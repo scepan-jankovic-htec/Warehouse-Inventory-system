@@ -8,6 +8,7 @@ import com.warehouse.inventory.domain.enums.StockStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -126,6 +127,7 @@ public class InventoryService {
                 product == null ? null : product.getSku(),
                 product == null ? null : product.getName(),
                 product == null ? null : product.getUnitOfMeasure(),
+                product == null ? BigDecimal.ZERO : product.getPrice(),
                 product == null ? 0 : product.getReorderThreshold()
             ),
             new InventoryLocationView(
@@ -148,6 +150,7 @@ public class InventoryService {
         String sku,
         String name,
         String unitOfMeasure,
+        BigDecimal price,
         int reorderThreshold
     ) {
     }

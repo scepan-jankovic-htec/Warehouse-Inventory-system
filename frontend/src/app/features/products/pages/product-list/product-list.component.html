@@ -47,6 +47,7 @@
             <th (click)="onSort('name')" class="sortable">Name {{ sortMarker('name') }}</th>
             <th (click)="onSort('categoryName')" class="sortable">Category {{ sortMarker('categoryName') }}</th>
             <th>UOM</th>
+            <th class="num">Price (EUR)</th>
             <th class="num">Reorder</th>
             <th>Status</th>
             <th (click)="onSort('createdAt')" class="sortable">Created {{ sortMarker('createdAt') }}</th>
@@ -60,6 +61,7 @@
               <td>{{ product.name }}</td>
               <td>{{ product.category.name }}</td>
               <td>{{ product.unitOfMeasure }}</td>
+              <td class="num">{{ product.price | number:'1.2-2' }}</td>
               <td class="num">{{ product.reorderThreshold }}</td>
               <td>
                 <app-status-badge

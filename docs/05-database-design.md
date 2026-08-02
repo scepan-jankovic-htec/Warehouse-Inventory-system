@@ -82,6 +82,7 @@ Stores the product catalog. Each product is a distinct item that can be stocked 
 | `description` | TEXT | Yes | — | Optional product description |
 | `category_id` | INTEGER | No | NOT NULL, FOREIGN KEY → category(id) | Owning category |
 | `unit_of_measure` | TEXT | No | NOT NULL | Unit in which stock is counted (e.g., "EACH", "BOX", "KG") |
+| `price` | NUMERIC | No | NOT NULL, DEFAULT 0, CHECK (≥ 0) | Product unit price in EUR |
 | `reorder_threshold` | INTEGER | No | NOT NULL, DEFAULT 0, CHECK (≥ 0) | Quantity below which low-stock alert is triggered |
 | `is_active` | INTEGER | No | NOT NULL, DEFAULT 1, CHECK (0 or 1) | Soft delete flag |
 | `created_at` | TEXT | No | NOT NULL | UTC timestamp of creation |
@@ -90,6 +91,7 @@ Stores the product catalog. Each product is a distinct item that can be stocked 
 **Constraints:**
 - `sku` must be unique across all products (active and inactive).
 - `category_id` must reference an existing category.
+- `price` must be ≥ 0.
 - `reorder_threshold` must be ≥ 0.
 - `is_active` must be 0 or 1.
 

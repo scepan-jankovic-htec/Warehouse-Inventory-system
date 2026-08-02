@@ -5,6 +5,7 @@ export interface InventoryProductSummaryResponse {
 	sku: string;
 	name: string;
 	unitOfMeasure: string;
+	price: number;
 	reorderThreshold: number;
 }
 

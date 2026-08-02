@@ -44,6 +44,7 @@ export class ProductFormComponent implements OnInit {
       description: ['', [Validators.maxLength(1000)]],
       categoryId: [null as number | null, [Validators.required]],
       unitOfMeasure: ['', [Validators.required, Validators.maxLength(20)]],
+      price: [0, [Validators.required, Validators.min(0)]],
       reorderThreshold: [0, [Validators.min(0)]],
     });
   }
@@ -70,6 +71,7 @@ export class ProductFormComponent implements OnInit {
           description: res.data.description ?? '',
           categoryId: res.data.category.id,
           unitOfMeasure: res.data.unitOfMeasure,
+          price: res.data.price,
           reorderThreshold: res.data.reorderThreshold,
         });
       },
@@ -106,6 +108,7 @@ export class ProductFormComponent implements OnInit {
       description: '',
       categoryId: null,
       unitOfMeasure: '',
+      price: 0,
       reorderThreshold: 0,
     });
   }
@@ -135,6 +138,7 @@ export class ProductFormComponent implements OnInit {
       description: (this.form.controls.description.value ?? '').trim() || undefined,
       categoryId: Number(this.form.controls.categoryId.value),
       unitOfMeasure: (this.form.controls.unitOfMeasure.value ?? '').trim(),
+      price: Number(this.form.controls.price.value ?? 0),
       reorderThreshold: Number(this.form.controls.reorderThreshold.value ?? 0),
     };
 
@@ -155,6 +159,7 @@ export class ProductFormComponent implements OnInit {
       description: (this.form.controls.description.value ?? '').trim() || undefined,
       categoryId: Number(this.form.controls.categoryId.value),
       unitOfMeasure: (this.form.controls.unitOfMeasure.value ?? '').trim(),
+      price: Number(this.form.controls.price.value ?? 0),
       reorderThreshold: Number(this.form.controls.reorderThreshold.value ?? 0),
     };
 

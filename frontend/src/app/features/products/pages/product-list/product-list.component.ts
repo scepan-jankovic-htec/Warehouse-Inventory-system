@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { CategoryService } from '../../../categories/services/category.service';
@@ -15,7 +16,7 @@ type ProductSortField = 'name' | 'sku' | 'categoryName' | 'createdAt';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [EmptyStateComponent, LoadingSpinnerComponent, PaginationComponent, StatusBadgeComponent],
+  imports: [DecimalPipe, EmptyStateComponent, LoadingSpinnerComponent, PaginationComponent, StatusBadgeComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],
 })

@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
@@ -49,17 +47,14 @@ public class MovementService extends ServiceValidationSupport {
 
     @Transactional
     public MovementResult receive(
-        Collection<Product> products,
-        Collection<Location> locations,
-        Collection<Inventory> inventories,
         AppUser actor,
         ReceiveStockRequest request
     ) {
         validate(request);
         AppUser activeActor = requireActiveActor(actor);
-        Product product = productService.resolveActiveProduct(products, request.productId());
-        Location location = locationService.resolveActiveLocation(locations, request.locationId());
-        Inventory inventory = findOrCreateInventory(inventories, product, location);
+        Product product = productService.resolveActiveProduct(request.productId());
+        Location location = locationService.resolveActiveLocation(request.locationId());
+        Inventory inventory = findOrCreateInventory(product, location);
 
         int quantityAfter = inventory.getQuantityOnHand() + request.quantity();
         inventory.setQuantityOnHand(quantityAfter);
@@ -81,29 +76,26 @@ public class MovementService extends ServiceValidationSupport {
 
     @Transactional
     public TransferResult transfer(
-        Collection<Product> products,
-        Collection<Location> locations,
-        Collection<Inventory> inventories,
         AppUser actor,
         TransferStockRequest request
     ) {
         validate(request);
         AppUser activeActor = requireActiveActor(actor);
-        Product product = productService.resolveActiveProduct(products, request.productId());
-        Location sourceLocation = locationService.resolveActiveLocation(locations, request.sourceLocationId());
-        Location destinationLocation = locationService.resolveActiveLocation(locations, request.destinationLocationId());
+        Product product = productService.resolveActiveProduct(request.productId());
+        Location sourceLocation = locationService.resolveActiveLocation(request.sourceLocationId());
+        Location destinationLocation = locationService.resolveActiveLocation(request.destinationLocationId());
 
         if (Objects.equals(sourceLocation.getId(), destinationLocation.getId())) {
             throw new IllegalArgumentException("Source and destination locations must be different.");
         }
 
-        Inventory sourceInventory = findExistingInventory(inventories, product.getId(), sourceLocation.getId())
+        Inventory sourceInventory = inventoryRepository.findByProductIdAndLocationId(product.getId(), sourceLocation.getId())
             .orElseThrow(() -> new IllegalStateException("Insufficient stock at source location."));
         if (sourceInventory.getQuantityOnHand() < request.quantity()) {
             throw new IllegalStateException("Insufficient stock at source location.");
         }
 
-        Inventory destinationInventory = findOrCreateInventory(inventories, product, destinationLocation);
+        Inventory destinationInventory = findOrCreateInventory(product, destinationLocation);
         sourceInventory.setQuantityOnHand(sourceInventory.getQuantityOnHand() - request.quantity());
         destinationInventory.setQuantityOnHand(destinationInventory.getQuantityOnHand() + request.quantity());
 
@@ -158,9 +150,6 @@ public class MovementService extends ServiceValidationSupport {
 
     @Transactional
     public MovementResult adjust(
-        Collection<Product> products,
-        Collection<Location> locations,
-        Collection<Inventory> inventories,
         AppUser actor,
         AdjustStockRequest request
     ) {
@@ -170,9 +159,9 @@ public class MovementService extends ServiceValidationSupport {
         }
 
         AppUser activeActor = requireActiveActor(actor);
-        Product product = productService.resolveActiveProduct(products, request.productId());
-        Location location = locationService.resolveActiveLocation(locations, request.locationId());
-        Inventory inventory = findOrCreateInventory(inventories, product, location);
+        Product product = productService.resolveActiveProduct(request.productId());
+        Location location = locationService.resolveActiveLocation(request.locationId());
+        Inventory inventory = findOrCreateInventory(product, location);
 
         int quantityAfter = inventory.getQuantityOnHand() + request.quantityDelta();
         if (quantityAfter < 0) {
@@ -196,8 +185,7 @@ public class MovementService extends ServiceValidationSupport {
         return toMovementResult(saved, quantityAfter, saved.getPerformedAt());
     }
 
-    public PageResult<HistoryView> findAll(Collection<InventoryMovement> movements, MovementHistoryQuery query) {
-        Objects.requireNonNull(movements, "Movements must not be null.");
+    public PageResult<HistoryView> findAll(MovementHistoryQuery query) {
         Objects.requireNonNull(query, "Query must not be null.");
 
         if (query.dateFrom() != null && query.dateTo() != null && query.dateFrom().isAfter(query.dateTo())) {
@@ -207,7 +195,7 @@ public class MovementService extends ServiceValidationSupport {
         int page = normalizePage(query.page());
         int size = normalizeSize(query.size());
 
-        List<HistoryView> result = movements.stream()
+        List<HistoryView> result = movementRepository.findAllWithAssociations().stream()
             .filter(movement -> query.productId() == null || hasProductId(movement, query.productId()))
             .filter(movement -> query.locationId() == null || hasLocationId(movement, query.locationId()))
             .filter(movement -> query.movementType() == null || movement.getMovementType() == query.movementType())
@@ -221,12 +209,9 @@ public class MovementService extends ServiceValidationSupport {
         return PageResult.of(result, page, size);
     }
 
-    public HistoryView findById(Collection<InventoryMovement> movements, Integer movementId) {
-        InventoryMovement movement = movements.stream()
-            .filter(candidate -> Objects.equals(candidate.getId(), movementId))
-            .findFirst()
+    public HistoryView findById(Integer movementId) {
+        InventoryMovement movement = movementRepository.findById(movementId)
             .orElseThrow(() -> new NoSuchElementException("Movement not found for id=" + movementId));
-
         return toHistoryView(movement);
     }
 
@@ -238,17 +223,8 @@ public class MovementService extends ServiceValidationSupport {
         return actor;
     }
 
-    private java.util.Optional<Inventory> findExistingInventory(Collection<Inventory> inventories, Integer productId, Integer locationId) {
-        return inventories.stream()
-            .filter(inventory -> inventory.getProduct() != null)
-            .filter(inventory -> inventory.getLocation() != null)
-            .filter(inventory -> Objects.equals(inventory.getProduct().getId(), productId))
-            .filter(inventory -> Objects.equals(inventory.getLocation().getId(), locationId))
-            .findFirst();
-    }
-
-    private Inventory findOrCreateInventory(Collection<Inventory> inventories, Product product, Location location) {
-        return findExistingInventory(inventories, product.getId(), location.getId())
+    private Inventory findOrCreateInventory(Product product, Location location) {
+        return inventoryRepository.findByProductIdAndLocationId(product.getId(), location.getId())
             .orElseGet(() -> {
                 Inventory inventory = new Inventory();
                 inventory.setProduct(product);
