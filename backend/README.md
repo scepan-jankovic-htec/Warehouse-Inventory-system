@@ -18,9 +18,13 @@ Authorization: Bearer <your_token>
 
 ### Important note
 
-This backend currently expects JWT authentication, but it does not expose a login controller in the codebase yet. That means you must first obtain a valid JWT token from the authentication flow available in your environment before calling protected endpoints.
+This backend exposes a login endpoint:
 
-If your environment already has a login endpoint, use it exactly as described below. If it does not, you cannot guess the token — the backend must provide one through a login flow or a test/dev token issued by the auth setup.
+```
+POST http://localhost:8080/api/auth/login
+```
+
+Use it to obtain a JWT token, then send that token as a Bearer token for protected endpoints.
 
 ### Step 1 — Log in and get a token
 
@@ -110,6 +114,36 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 - [Inventory Movements](#inventory-movements)
 - [Dashboard](#dashboard)
 - [Users](#users)
+
+---
+
+## Auth
+
+### POST /api/auth/login
+
+Authenticates a user and returns a JWT token.
+
+**Postman:**
+```
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+```
+
+**Example Response `200 OK`:**
+```json
+{
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiJ9...",
+    "tokenType": "Bearer",
+    "expiresInMs": 86400000
+  }
+}
+```
 
 ---
 

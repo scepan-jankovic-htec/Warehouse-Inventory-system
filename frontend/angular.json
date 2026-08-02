@@ -1,0 +1,572 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": "875fce33-8e73-403d-96a8-7bfc30adb52e"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "warehouse-inventory-frontend": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "warehouse-inventory-frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "warehouse-inventory-frontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/environments/environment.ts
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'
+};
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/environments/environment.prod.ts
+export const environment = {
+  production: true,
+  apiUrl: 'http://localhost:8080/api'
+};
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/auth/auth.model.ts
+export type UserRole = 'ADMIN' | 'WAREHOUSE_OPERATOR' | 'STORE_OPERATOR' | 'MANAGER';
+
+export interface AuthState {
+  accessToken: string | null;
+  isAuthenticated: boolean;
+}
+
+export interface CurrentUser {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: UserRole;
+  active: boolean;
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/auth/auth.service.ts
+import { Injectable, computed, signal } from '@angular/core';
+import { AuthState, CurrentUser } from './auth.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private readonly authState = signal<AuthState>({
+    accessToken: null,
+    isAuthenticated: false
+  });
+
+  private readonly currentUserState = signal<CurrentUser | null>(null);
+
+  readonly state = this.authState.asReadonly();
+  readonly currentUser = this.currentUserState.asReadonly();
+  readonly isAuthenticated = computed(() => this.authState().isAuthenticated);
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/auth/auth.guard.ts
+import { CanActivateFn } from '@angular/router';
+
+export const authGuard: CanActivateFn = () => true;
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/auth/role.guard.ts
+import { CanActivateFn } from '@angular/router';
+
+export const roleGuard: CanActivateFn = () => true;
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/interceptors/auth.interceptor.ts
+import { HttpInterceptorFn } from '@angular/common/http';
+
+export const authInterceptor: HttpInterceptorFn = (request, next) => next(request);
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/interceptors/error.interceptor.ts
+import { HttpInterceptorFn } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
+
+export const errorInterceptor: HttpInterceptorFn = (request, next) => {
+  return next(request).pipe(catchError((error) => throwError(() => error)));
+};
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/models/api-error.model.ts
+export interface FieldError {
+  field: string;
+  message: string;
+}
+
+export interface ApiError {
+  status: number;
+  error: string;
+  message: string;
+  timestamp: string;
+  fieldErrors?: FieldError[];
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/models/api-response.model.ts
+export interface Pagination {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+}
+
+export interface PagedResponse<T> {
+  data: T[];
+  pagination: Pagination;
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/core/notification/notification.service.ts
+import { Injectable, signal } from '@angular/core';
+
+export interface NotificationMessage {
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class NotificationService {
+  private readonly queueState = signal<NotificationMessage[]>([]);
+
+  readonly queue = this.queueState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/layout/shell/shell.component.ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-shell',
+  imports: [RouterOutlet],
+  template: '<router-outlet />'
+})
+export class ShellComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/layout/sidebar/sidebar.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-sidebar',
+  template: ''
+})
+export class SidebarComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/layout/topbar/topbar.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-topbar',
+  template: ''
+})
+export class TopbarComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/auth/pages/login/login.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-login',
+  template: ''
+})
+export class LoginComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/dashboard/dashboard.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-dashboard',
+  template: ''
+})
+export class DashboardComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/dashboard/dashboard.routes.ts
+import { Routes } from '@angular/router';
+import { DashboardComponent } from './dashboard.component';
+
+export const dashboardRoutes: Routes = [
+  {
+    path: '',
+    component: DashboardComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/dashboard/models/dashboard.model.ts
+export interface DashboardModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/dashboard/services/dashboard.service.ts
+import { Injectable, signal } from '@angular/core';
+import { DashboardModel } from '../models/dashboard.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DashboardService {
+  private readonly dashboardState = signal<DashboardModel | null>(null);
+
+  readonly dashboard = this.dashboardState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/pages/product-list/product-list.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-product-list',
+  template: ''
+})
+export class ProductListComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/pages/product-detail/product-detail.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-product-detail',
+  template: ''
+})
+export class ProductDetailComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/pages/product-form/product-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-product-form',
+  template: ''
+})
+export class ProductFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/products.routes.ts
+import { Routes } from '@angular/router';
+import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
+import { ProductFormComponent } from './pages/product-form/product-form.component';
+import { ProductListComponent } from './pages/product-list/product-list.component';
+
+export const productsRoutes: Routes = [
+  {
+    path: '',
+    component: ProductListComponent
+  },
+  {
+    path: 'new',
+    component: ProductFormComponent
+  },
+  {
+    path: ':id',
+    component: ProductDetailComponent
+  },
+  {
+    path: ':id/edit',
+    component: ProductFormComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/models/product.model.ts
+export interface ProductModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/products/services/product.service.ts
+import { Injectable, signal } from '@angular/core';
+import { ProductModel } from '../models/product.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductService {
+  private readonly productsState = signal<ProductModel[]>([]);
+
+  readonly products = this.productsState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/categories/pages/category-list/category-list.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-category-list',
+  template: ''
+})
+export class CategoryListComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/categories/pages/category-form/category-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-category-form',
+  template: ''
+})
+export class CategoryFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/categories/categories.routes.ts
+import { Routes } from '@angular/router';
+import { CategoryFormComponent } from './pages/category-form/category-form.component';
+import { CategoryListComponent } from './pages/category-list/category-list.component';
+
+export const categoriesRoutes: Routes = [
+  {
+    path: '',
+    component: CategoryListComponent
+  },
+  {
+    path: 'new',
+    component: CategoryFormComponent
+  },
+  {
+    path: ':id/edit',
+    component: CategoryFormComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/categories/models/category.model.ts
+export interface CategoryModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/categories/services/category.service.ts
+import { Injectable, signal } from '@angular/core';
+import { CategoryModel } from '../models/category.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CategoryService {
+  private readonly categoriesState = signal<CategoryModel[]>([]);
+
+  readonly categories = this.categoriesState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/locations/pages/location-list/location-list.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-location-list',
+  template: ''
+})
+export class LocationListComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/locations/pages/location-form/location-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-location-form',
+  template: ''
+})
+export class LocationFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/locations/locations.routes.ts
+import { Routes } from '@angular/router';
+import { LocationFormComponent } from './pages/location-form/location-form.component';
+import { LocationListComponent } from './pages/location-list/location-list.component';
+
+export const locationsRoutes: Routes = [
+  {
+    path: '',
+    component: LocationListComponent
+  },
+  {
+    path: 'new',
+    component: LocationFormComponent
+  },
+  {
+    path: ':id/edit',
+    component: LocationFormComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/locations/models/location.model.ts
+export interface LocationModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/locations/services/location.service.ts
+import { Injectable, signal } from '@angular/core';
+import { LocationModel } from '../models/location.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LocationService {
+  private readonly locationsState = signal<LocationModel[]>([]);
+
+  readonly locations = this.locationsState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/pages/inventory-overview/inventory-overview.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-inventory-overview',
+  template: ''
+})
+export class InventoryOverviewComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/pages/receive-form/receive-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-receive-form',
+  template: ''
+})
+export class ReceiveFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/pages/transfer-form/transfer-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-transfer-form',
+  template: ''
+})
+export class TransferFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/pages/adjustment-form/adjustment-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-adjustment-form',
+  template: ''
+})
+export class AdjustmentFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/inventory.routes.ts
+import { Routes } from '@angular/router';
+import { AdjustmentFormComponent } from './pages/adjustment-form/adjustment-form.component';
+import { InventoryOverviewComponent } from './pages/inventory-overview/inventory-overview.component';
+import { ReceiveFormComponent } from './pages/receive-form/receive-form.component';
+import { TransferFormComponent } from './pages/transfer-form/transfer-form.component';
+
+export const inventoryRoutes: Routes = [
+  {
+    path: '',
+    component: InventoryOverviewComponent
+  },
+  {
+    path: 'receive',
+    component: ReceiveFormComponent
+  },
+  {
+    path: 'transfer',
+    component: TransferFormComponent
+  },
+  {
+    path: 'adjust',
+    component: AdjustmentFormComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/models/inventory.model.ts
+export interface InventoryModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/models/movement.model.ts
+export interface MovementModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/inventory/services/inventory.service.ts
+import { Injectable, signal } from '@angular/core';
+import { InventoryModel } from '../models/inventory.model';
+import { MovementModel } from '../models/movement.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class InventoryService {
+  private readonly inventoryState = signal<InventoryModel[]>([]);
+  private readonly movementsState = signal<MovementModel[]>([]);
+
+  readonly inventory = this.inventoryState.asReadonly();
+  readonly movements = this.movementsState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/history/pages/history-list/history-list.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-history-list',
+  template: ''
+})
+export class HistoryListComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/history/history.routes.ts
+import { Routes } from '@angular/router';
+import { HistoryListComponent } from './pages/history-list/history-list.component';
+
+export const historyRoutes: Routes = [
+  {
+    path: '',
+    component: HistoryListComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/history/models/history-entry.model.ts
+export interface HistoryEntryModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/history/services/history.service.ts
+import { Injectable, signal } from '@angular/core';
+import { HistoryEntryModel } from '../models/history-entry.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class HistoryService {
+  private readonly historyState = signal<HistoryEntryModel[]>([]);
+
+  readonly history = this.historyState.asReadonly();
+}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/users/pages/user-list/user-list.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-user-list',
+  template: ''
+})
+export class UserListComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/users/pages/user-form/user-form.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-user-form',
+  template: ''
+})
+export class UserFormComponent {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/users/users.routes.ts
+import { Routes } from '@angular/router';
+import { UserFormComponent } from './pages/user-form/user-form.component';
+import { UserListComponent } from './pages/user-list/user-list.component';
+
+export const usersRoutes: Routes = [
+  {
+    path: '',
+    component: UserListComponent
+  },
+  {
+    path: 'new',
+    component: UserFormComponent
+  },
+  {
+    path: ':id/edit',
+    component: UserFormComponent
+  }
+];
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/users/models/user.model.ts
+export interface UserModel {}
+*** Add File: /Users/scepanjankovic/Documents/Warehouse-Inventory-system/frontend/src/app/features/users/services/user.service.ts
+import { Injectable, signal } from '@angular/core';
+import { UserModel } from '../models/user.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  private readonly usersState = signal<UserModel[]>([]);
+
+  readonly users = this.usersState.asReadonly();
+}
