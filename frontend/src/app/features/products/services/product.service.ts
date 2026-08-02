@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { finalize, Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../../core/models/api-response.model';
 import {
@@ -48,33 +48,31 @@ export class ProductService {
    * Load a paginated, optionally-filtered list of products.
    * Updates the `products`, pagination, and `isLoading` signals.
    */
-  loadProducts(params: ProductListParams = {}): void {
+  loadProducts(params: ProductListParams = {}): Observable<PagedResponse<ProductResponse>> {
     this._isLoading.set(true);
-    this.getProducts(params).subscribe({
-      next: (res) => {
+    return this.getProducts(params).pipe(
+      tap((res) => {
         this._products.set(res.data);
         this._totalElements.set(res.pagination.totalElements);
         this._totalPages.set(res.pagination.totalPages);
         this._currentPage.set(res.pagination.page);
-        this._isLoading.set(false);
-      },
-      error: () => this._isLoading.set(false),
-    });
+      }),
+      finalize(() => this._isLoading.set(false))
+    );
   }
 
   /**
    * Load a single product by ID, including per-location inventory.
    * Updates the `selectedProduct` signal.
    */
-  loadProduct(id: number): void {
+  loadProduct(id: number): Observable<ApiResponse<ProductDetailResponse>> {
     this._isLoading.set(true);
-    this.getProduct(id).subscribe({
-      next: (res) => {
+    return this.getProduct(id).pipe(
+      tap((res) => {
         this._selectedProduct.set(res.data);
-        this._isLoading.set(false);
-      },
-      error: () => this._isLoading.set(false),
-    });
+      }),
+      finalize(() => this._isLoading.set(false))
+    );
   }
 
   // ── HTTP methods ──────────────────────────────────────────────────────────
@@ -122,5 +120,4 @@ export class ProductService {
       )
     );
   }
-}
 }
