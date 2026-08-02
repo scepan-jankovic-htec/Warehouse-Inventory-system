@@ -1,8 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { finalize, Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../../core/models/api-response.model';
+import { ProductResponse } from '../../products/models/product.model';
+import { LocationResponse } from '../../locations/models/location.model';
 import { InventoryResponse } from '../models/inventory.model';
 import {
   MovementResponse,
@@ -44,20 +46,32 @@ export interface MovementListParams {
 })
 export class InventoryService {
   private readonly baseUrl = `${environment.apiUrl}/inventory`;
+  private readonly productsUrl = `${environment.apiUrl}/products`;
+  private readonly locationsUrl = `${environment.apiUrl}/locations`;
 
   // ── Writable state ────────────────────────────────────────────────────────
   private readonly _inventoryList = signal<InventoryResponse[]>([]);
+  private readonly _movements = signal<MovementResponse[]>([]);
   private readonly _isLoading = signal<boolean>(false);
+  private readonly _isLoadingMovements = signal<boolean>(false);
   private readonly _totalElements = signal<number>(0);
   private readonly _totalPages = signal<number>(0);
   private readonly _currentPage = signal<number>(1);
+  private readonly _movementTotalElements = signal<number>(0);
+  private readonly _movementTotalPages = signal<number>(0);
+  private readonly _movementCurrentPage = signal<number>(1);
 
   // ── Public read-only signals ───────────────────────────────────────────────
   readonly inventoryList = this._inventoryList.asReadonly();
+  readonly movements = this._movements.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
+  readonly isLoadingMovements = this._isLoadingMovements.asReadonly();
   readonly totalElements = this._totalElements.asReadonly();
   readonly totalPages = this._totalPages.asReadonly();
   readonly currentPage = this._currentPage.asReadonly();
+  readonly movementTotalElements = this._movementTotalElements.asReadonly();
+  readonly movementTotalPages = this._movementTotalPages.asReadonly();
+  readonly movementCurrentPage = this._movementCurrentPage.asReadonly();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -66,18 +80,33 @@ export class InventoryService {
    * product, category, stock status, and free-text search.
    * Updates `inventoryList`, pagination, and `isLoading` signals.
    */
-  loadInventory(params: InventoryListParams = {}): void {
+  loadInventory(params: InventoryListParams = {}): Observable<PagedResponse<InventoryResponse>> {
     this._isLoading.set(true);
-    this.getInventory(params).subscribe({
-      next: (res) => {
+    return this.getInventory(params).pipe(
+      tap((res) => {
         this._inventoryList.set(res.data);
         this._totalElements.set(res.pagination.totalElements);
         this._totalPages.set(res.pagination.totalPages);
         this._currentPage.set(res.pagination.page);
-        this._isLoading.set(false);
-      },
-      error: () => this._isLoading.set(false),
-    });
+      }),
+      finalize(() => this._isLoading.set(false))
+    );
+  }
+
+  /**
+   * Load movement history and update movement signals.
+   */
+  loadMovements(params: MovementListParams = {}): Observable<PagedResponse<MovementResponse>> {
+    this._isLoadingMovements.set(true);
+    return this.getMovements(params).pipe(
+      tap((res) => {
+        this._movements.set(res.data);
+        this._movementTotalElements.set(res.pagination.totalElements);
+        this._movementTotalPages.set(res.pagination.totalPages);
+        this._movementCurrentPage.set(res.pagination.page);
+      }),
+      finalize(() => this._isLoadingMovements.set(false))
+    );
   }
 
   // ── Inventory query HTTP methods ──────────────────────────────────────────
@@ -165,8 +194,32 @@ export class InventoryService {
   getMovement(id: number): Observable<ApiResponse<MovementResponse>> {
     return this.http.get<ApiResponse<MovementResponse>>(`${this.baseUrl}/movements/${id}`);
   }
-}
 
-  readonly inventory = this.inventoryState.asReadonly();
-  readonly movements = this.movementsState.asReadonly();
+  // ── Lookup methods for forms ──────────────────────────────────────────────
+
+  getProductOptions(search?: string): Observable<PagedResponse<ProductResponse>> {
+    let httpParams = new HttpParams()
+      .set('active', 'true')
+      .set('sortBy', 'name')
+      .set('sortDir', 'asc')
+      .set('page', '1')
+      .set('size', '500');
+
+    if (search?.trim()) {
+      httpParams = httpParams.set('search', search.trim());
+    }
+
+    return this.http.get<PagedResponse<ProductResponse>>(this.productsUrl, { params: httpParams });
+  }
+
+  getLocationOptions(): Observable<PagedResponse<LocationResponse>> {
+    const httpParams = new HttpParams()
+      .set('active', 'true')
+      .set('sortBy', 'name')
+      .set('sortDir', 'asc')
+      .set('page', '1')
+      .set('size', '500');
+
+    return this.http.get<PagedResponse<LocationResponse>>(this.locationsUrl, { params: httpParams });
+  }
 }
