@@ -29,3 +29,9 @@ export interface StockHealthResponse {
 	lowStockCount: number;
 	outOfStockCount: number;
 }
+
+export interface CategoryStockSummary {
+	categoryId: number | null;
+	categoryName: string;
+	totalStock: number;
+}
