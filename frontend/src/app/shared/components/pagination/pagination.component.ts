@@ -1,42 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="pagination" *ngIf="totalPages() > 0">
-      <button type="button" class="btn" (click)="goPrevious()" [disabled]="isFirstPage()">← Previous</button>
-      <span>Page {{ page() }} of {{ totalPages() }} ({{ totalElements() }} total)</span>
-      <button type="button" class="btn" (click)="goNext()" [disabled]="isLastPage()">Next →</button>
-    </div>
-  `,
-  styles: `
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-      color: #475569;
-      font-size: 14px;
-    }
-
-    .btn {
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      border-radius: 6px;
-      padding: 7px 12px;
-      cursor: pointer;
-    }
-
-    .btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-  `
+  templateUrl: './pagination.component.html',
+  styleUrls: ['./pagination.component.scss']
 })
 export class PaginationComponent {
   readonly page = input<number>(1);

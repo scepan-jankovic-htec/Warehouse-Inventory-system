@@ -1,0 +1,19 @@
+<div class="topbar-content">
+  <span class="topbar-title">📦 Warehouse Inventory System</span>
+
+  <div class="topbar-spacer"></div>
+
+  @if (currentUser(); as user) {
+    <div class="topbar-user-section">
+      <div class="topbar-user-info-display">
+        <span class="topbar-user-name">{{ user.fullName }}</span>
+        <span class="topbar-role-badge" [class]="'role-' + (user.role || 'user')">
+          {{ user.role }}
+        </span>
+      </div>
+      <button class="topbar-logout-btn" type="button" (click)="logout()" title="Logout">
+        ↗ Logout
+      </button>
+    </div>
+  }
+</div>

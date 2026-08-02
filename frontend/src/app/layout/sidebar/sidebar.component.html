@@ -1,0 +1,35 @@
+<nav class="sidebar-nav">
+  <div class="sidebar-section">
+    @for (item of mainNavItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="sidebar-nav-item"
+        [attr.title]="item.label"
+      >
+        <span class="sidebar-icon">{{ item.icon }}</span>
+        <span class="sidebar-label">{{ item.label }}</span>
+      </a>
+    }
+  </div>
+
+  @if (adminNavItems.length > 0) {
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      @for (item of adminNavItems; track item.route) {
+        @if (canShowItem(item)) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="sidebar-nav-item"
+            [attr.title]="item.label"
+          >
+            <span class="sidebar-icon">{{ item.icon }}</span>
+            <span class="sidebar-label">{{ item.label }}</span>
+          </a>
+        }
+      }
+    </div>
+  }
+</nav>

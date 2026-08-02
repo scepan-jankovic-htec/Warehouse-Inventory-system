@@ -1,0 +1,37 @@
+h3 {
+  margin: 0 0 14px;
+  color: #1e293b;
+  font-size: 18px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 520px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+}
+
+.qty {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

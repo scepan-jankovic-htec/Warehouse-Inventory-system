@@ -1,0 +1,59 @@
+<section class="page">
+  <header class="header">
+    <h1>Dashboard</h1>
+  </header>
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading dashboard..." />
+  }
+
+  @if (!isLoading()) {
+    <section class="metrics">
+      <article class="metric-card">
+        <p class="metric-label">Total products</p>
+        <p class="metric-value">{{ summary()?.totalActiveProducts ?? 0 }}</p>
+      </article>
+
+      <article class="metric-card">
+        <p class="metric-label">Total stock</p>
+        <p class="metric-value">{{ formatNumber(totalStock()) }}</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Stock per category</h2>
+
+      @if (stockPerCategory().length === 0) {
+        <app-empty-state
+          title="No category stock data"
+          description="No inventory rows are available to aggregate by category."
+        />
+      }
+
+      @if (stockPerCategory().length > 0) {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th class="num">Total stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of stockPerCategory(); track row.categoryName) {
+                <tr>
+                  <td>{{ row.categoryName }}</td>
+                  <td class="num">{{ formatNumber(row.totalStock) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</section>

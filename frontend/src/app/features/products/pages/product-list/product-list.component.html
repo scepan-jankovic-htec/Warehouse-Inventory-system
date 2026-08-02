@@ -1,0 +1,113 @@
+<section class="page">
+  <header class="page-header">
+    <h1>Products</h1>
+    <button type="button" class="btn btn-primary" (click)="goToCreate()">+ New Product</button>
+  </header>
+
+  <section class="filters">
+    <input
+      type="text"
+      class="control"
+      placeholder="Search by SKU or name"
+      [value]="search()"
+      (input)="onSearchInput($event)"
+    />
+
+    <select class="control" [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+      <option value="">All categories</option>
+      @for (category of categories(); track category.id) {
+        <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+
+    <select class="control" [value]="activeFilter()" (change)="onActiveFilterChange($event)">
+      <option value="ALL">All statuses</option>
+      <option value="ACTIVE">Active</option>
+      <option value="INACTIVE">Inactive</option>
+    </select>
+  </section>
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading products..." />
+  }
+
+  @if (!isLoading() && products().length === 0) {
+    <app-empty-state
+      title="No products found"
+      description="Try changing filters or create a new product."
+    />
+  }
+
+  @if (!isLoading() && products().length > 0) {
+    <section class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th (click)="onSort('sku')" class="sortable">SKU {{ sortMarker('sku') }}</th>
+            <th (click)="onSort('name')" class="sortable">Name {{ sortMarker('name') }}</th>
+            <th (click)="onSort('categoryName')" class="sortable">Category {{ sortMarker('categoryName') }}</th>
+            <th>UOM</th>
+            <th class="num">Reorder</th>
+            <th>Status</th>
+            <th (click)="onSort('createdAt')" class="sortable">Created {{ sortMarker('createdAt') }}</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr>
+              <td>{{ product.sku }}</td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.category.name }}</td>
+              <td>{{ product.unitOfMeasure }}</td>
+              <td class="num">{{ product.reorderThreshold }}</td>
+              <td>
+                <app-status-badge
+                  [value]="product.active ? 'ACTIVE' : 'INACTIVE'"
+                  [label]="product.active ? 'Active' : 'Inactive'"
+                />
+              </td>
+              <td>{{ formatDate(product.createdAt) }}</td>
+              <td class="actions-col">
+                <button type="button" class="btn btn-sm" (click)="goToDetail(product.id)">View</button>
+                <button type="button" class="btn btn-sm" (click)="goToEdit(product.id)">Edit</button>
+
+                @if (product.active) {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger"
+                    (click)="deactivate(product)"
+                  >
+                    Delete
+                  </button>
+                }
+
+                @if (!product.active) {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-success"
+                    (click)="activate(product.id)"
+                  >
+                    Activate
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <app-pagination
+      [page]="currentPage()"
+      [totalPages]="totalPages()"
+      [totalElements]="totalElements()"
+      (previous)="goPrevious()"
+      (next)="goNext()"
+    />
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</section>

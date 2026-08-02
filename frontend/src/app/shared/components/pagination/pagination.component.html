@@ -1,0 +1,7 @@
+@if (totalPages() > 0) {
+  <div class="pagination">
+    <button type="button" class="btn" (click)="goPrevious()" [disabled]="isFirstPage()">← Previous</button>
+    <span>Page {{ page() }} of {{ totalPages() }} ({{ totalElements() }} total)</span>
+    <button type="button" class="btn" (click)="goNext()" [disabled]="isLastPage()">Next →</button>
+  </div>
+}

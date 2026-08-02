@@ -1,0 +1,37 @@
+<section>
+  <h3>Inventory by Location</h3>
+
+  @if (inventory().length === 0) {
+    <app-empty-state
+      title="No inventory records"
+      description="This product has no stock records yet."
+    />
+  }
+
+  @if (inventory().length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Type</th>
+            <th class="qty">Quantity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of inventory(); track item.locationName) {
+            <tr>
+              <td>{{ item.locationName }}</td>
+              <td>{{ item.locationType }}</td>
+              <td class="qty">{{ item.quantityOnHand }}</td>
+              <td>
+                <app-status-badge [value]="item.stockStatus" [label]="formatStatus(item.stockStatus)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
