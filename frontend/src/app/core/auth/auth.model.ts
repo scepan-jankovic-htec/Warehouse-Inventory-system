@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'WAREHOUSE_OPERATOR' | 'STORE_OPERATOR' | 'MANAGER';
+import { UserRole } from '../models/api-enums.model';
 
 export interface AuthState {
   accessToken: string | null;
