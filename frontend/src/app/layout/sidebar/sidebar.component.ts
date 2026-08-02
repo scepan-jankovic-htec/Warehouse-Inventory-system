@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -38,17 +38,18 @@ interface NavItem {
       <div class="sidebar-divider" *ngIf="adminNavItems.length > 0"></div>
 
       <div class="sidebar-section" *ngIf="adminNavItems.length > 0">
-        <a
-          *ngFor="let item of adminNavItems"
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          class="sidebar-nav-item"
-          [attr.title]="item.label"
-          *ngIf="canShowItem(item)"
-        >
-          <span class="sidebar-icon">{{ item.icon }}</span>
-          <span class="sidebar-label">{{ item.label }}</span>
-        </a>
+        <ng-container *ngFor="let item of adminNavItems">
+          <a
+            *ngIf="canShowItem(item)"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="sidebar-nav-item"
+            [attr.title]="item.label"
+          >
+            <span class="sidebar-icon">{{ item.icon }}</span>
+            <span class="sidebar-label">{{ item.label }}</span>
+          </a>
+        </ng-container>
       </div>
     </nav>
   `,
@@ -110,6 +111,8 @@ interface NavItem {
   `],
 })
 export class SidebarComponent {
+  private readonly authService = inject(AuthService);
+
   currentUser = this.authService.currentUser;
 
   // Navigation items accessible to all authenticated users
@@ -126,8 +129,6 @@ export class SidebarComponent {
   readonly adminNavItems: NavItem[] = [
     { label: 'Users', icon: '👥', route: '/users', requiredRole: 'ADMIN' },
   ];
-
-  constructor(private readonly authService: AuthService) {}
 
   /**
    * Determine if a nav item should be visible based on the current user's role.

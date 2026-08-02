@@ -98,4 +98,65 @@ describe('ProductFormComponent', () => {
     component.submit();
     expect(component.form.controls.sku.hasError('duplicate')).toBe(true);
   });
+
+  it('maps 422 inactive category to category control', () => {
+    const productServiceMock = {
+      loadProduct: vi.fn(() =>
+        of({
+          data: {
+            id: 10,
+            sku: 'BAT-AA-4P',
+            name: 'AA Battery 4-Pack',
+            description: null,
+            category: { id: 1, name: 'Electronics' },
+            unitOfMeasure: 'PACK',
+            reorderThreshold: 50,
+            active: true,
+            inventory: [],
+            createdAt: '2026-08-01T10:00:00Z',
+            updatedAt: '2026-08-01T10:00:00Z',
+          },
+        })
+      ),
+      createProduct: vi.fn(() => throwError(() => ({ status: 422, message: 'Inactive category' }))),
+      updateProduct: vi.fn(() => of({ data: { id: 10 } })),
+    };
+
+    const categoryServiceMock = {
+      activeCategories: () => [
+        { id: 1, name: 'Electronics', description: null, active: true, productCount: 1, createdAt: '', updatedAt: '' },
+      ],
+      loadCategories: vi.fn(() =>
+        of({
+          data: [
+            { id: 1, name: 'Electronics', description: null, active: true, productCount: 1, createdAt: '', updatedAt: '' },
+          ],
+          pagination: { page: 1, size: 20, totalElements: 1, totalPages: 1 },
+        })
+      ),
+    };
+
+    const routeMock = { snapshot: { paramMap: convertToParamMap({}) } } as ActivatedRoute;
+    const routerMock = { navigate: vi.fn() } as unknown as Router;
+    const component = new ProductFormComponent(
+      new FormBuilder(),
+      routeMock,
+      routerMock,
+      productServiceMock as never,
+      categoryServiceMock as never
+    );
+
+    component.ngOnInit();
+    component.form.patchValue({
+      sku: 'ABC-1',
+      name: 'Product',
+      categoryId: 1,
+      unitOfMeasure: 'PCS',
+      reorderThreshold: 0,
+    });
+
+    component.submit();
+
+    expect(component.form.controls.categoryId.hasError('inactiveCategory')).toBe(true);
+  });
 });

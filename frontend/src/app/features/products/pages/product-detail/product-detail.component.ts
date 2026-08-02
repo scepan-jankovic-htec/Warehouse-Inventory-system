@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
@@ -197,17 +197,15 @@ import { ProductService } from '../../services/product.service';
   `,
 })
 export class ProductDetailComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly productService = inject(ProductService);
+
   readonly product = computed(() => this.productService.selectedProduct());
   readonly isLoading = this.productService.isLoading;
   readonly errorMessage = signal('');
 
   private productId: number | null = null;
-
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly productService: ProductService
-  ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

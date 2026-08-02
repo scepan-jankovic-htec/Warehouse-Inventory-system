@@ -1394,6 +1394,8 @@ Run the full frontend test suite and measure coverage. Identify gaps. Write miss
 
 **Testing:** This task is testing-only.
 
+**Status:** Completed in implementation session.
+
 ---
 
 ## TASK FE-20: End-to-End Verification

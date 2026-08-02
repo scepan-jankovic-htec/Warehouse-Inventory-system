@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -115,12 +115,10 @@ import { AuthService } from '../../core/auth/auth.service';
   `],
 })
 export class TopbarComponent implements OnInit {
-  currentUser = this.authService.currentUser;
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router
-  ) {}
+  currentUser = this.authService.currentUser;
 
   ngOnInit(): void {
     // Current user is already loaded from AuthService on app init

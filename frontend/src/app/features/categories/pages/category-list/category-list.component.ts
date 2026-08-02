@@ -460,26 +460,26 @@ export class CategoryListComponent implements OnInit {
   );
 
   filteredCategories = computed(() => {
-    const all = this.categories$;
+    const all = this.categories$();
     const search = this.searchQuery().toLowerCase();
     const activeOnlyFilter = this.activeOnly();
     const sortField = this.sortBy();
     const sortDirection = this.sortDir();
 
-    let filtered = all.filter(cat => {
+    let filtered = all.filter((cat: CategoryResponse) => {
       const matchesSearch = search === '' || cat.name.toLowerCase().includes(search);
       const matchesActive = !activeOnlyFilter || cat.active;
       return matchesSearch && matchesActive;
     });
 
     // Sort
-    filtered.sort((a, b) => {
-      let aVal: any = sortField === 'name' ? a.name : new Date(a.createdAt).getTime();
-      let bVal: any = sortField === 'name' ? b.name : new Date(b.createdAt).getTime();
+    filtered.sort((a: CategoryResponse, b: CategoryResponse) => {
+      const aVal = sortField === 'name' ? a.name : new Date(a.createdAt).getTime();
+      const bVal = sortField === 'name' ? b.name : new Date(b.createdAt).getTime();
 
-      const comparison = typeof aVal === 'string'
+      const comparison = typeof aVal === 'string' && typeof bVal === 'string'
         ? aVal.localeCompare(bVal)
-        : aVal - bVal;
+        : Number(aVal) - Number(bVal);
 
       return sortDirection === 'asc' ? comparison : -comparison;
     });

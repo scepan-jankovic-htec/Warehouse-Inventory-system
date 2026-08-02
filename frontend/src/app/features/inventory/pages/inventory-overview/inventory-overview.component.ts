@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { StockStatus } from '../../../../core/models/api-enums.model';
@@ -266,6 +266,8 @@ type InventorySortField =
   `,
 })
 export class InventoryOverviewComponent implements OnInit {
+  private readonly inventoryService = inject(InventoryService);
+  private readonly router = inject(Router);
   private readonly searchSubject = new Subject<string>();
 
   readonly search = signal('');
@@ -282,11 +284,6 @@ export class InventoryOverviewComponent implements OnInit {
   readonly totalPages = this.inventoryService.totalPages;
   readonly movements = this.inventoryService.movements;
   readonly isLoadingMovements = this.inventoryService.isLoadingMovements;
-
-  constructor(
-    private readonly inventoryService: InventoryService,
-    private readonly router: Router
-  ) {}
 
   ngOnInit(): void {
     this.loadInventory();

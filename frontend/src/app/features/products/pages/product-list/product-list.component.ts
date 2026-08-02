@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { CategoryService } from '../../../categories/services/category.service';
@@ -253,6 +253,9 @@ type ProductSortField = 'name' | 'sku' | 'categoryName' | 'createdAt';
   `,
 })
 export class ProductListComponent implements OnInit {
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly router = inject(Router);
   private readonly searchSubject = new Subject<string>();
 
   readonly search = signal('');
@@ -269,12 +272,6 @@ export class ProductListComponent implements OnInit {
   readonly isLoading = this.productService.isLoading;
   readonly totalElements = this.productService.totalElements;
   readonly totalPages = this.productService.totalPages;
-
-  constructor(
-    private readonly productService: ProductService,
-    private readonly categoryService: CategoryService,
-    private readonly router: Router
-  ) {}
 
   ngOnInit(): void {
     this.categoryService
