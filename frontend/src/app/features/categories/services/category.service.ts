@@ -50,34 +50,34 @@ export class CategoryService {
   /**
    * Load a paginated, optionally-filtered list of categories.
    * Updates the `categories`, pagination, and `isLoading` signals.
+   * Returns the observable for caller error handling.
    */
-  loadCategories(params: CategoryListParams = {}): void {
+  loadCategories(params: CategoryListParams = {}): Observable<PagedResponse<CategoryResponse>> {
     this._isLoading.set(true);
-    this.getCategories(params).subscribe({
-      next: (res) => {
+    return this.getCategories(params).pipe(
+      tap((res) => {
         this._categories.set(res.data);
         this._totalElements.set(res.pagination.totalElements);
         this._totalPages.set(res.pagination.totalPages);
         this._currentPage.set(res.pagination.page);
         this._isLoading.set(false);
-      },
-      error: () => this._isLoading.set(false),
-    });
+      })
+    );
   }
 
   /**
    * Load a single category by ID.
    * Updates the `selectedCategory` signal.
+   * Returns the observable for caller error handling.
    */
-  loadCategory(id: number): void {
+  loadCategory(id: number): Observable<ApiResponse<CategoryResponse>> {
     this._isLoading.set(true);
-    this.getCategory(id).subscribe({
-      next: (res) => {
+    return this.getCategory(id).pipe(
+      tap((res) => {
         this._selectedCategory.set(res.data);
         this._isLoading.set(false);
-      },
-      error: () => this._isLoading.set(false),
-    });
+      })
+    );
   }
 
   // ── HTTP methods (return Observables for caller-controlled error handling) ─
