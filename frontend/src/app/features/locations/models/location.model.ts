@@ -9,3 +9,15 @@ export interface LocationResponse {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface LocationCreateRequest {
+	name: string;
+	type: LocationType;
+	address?: string;
+}
+
+export interface LocationUpdateRequest {
+	name: string;
+	type: LocationType;
+	address?: string;
+}

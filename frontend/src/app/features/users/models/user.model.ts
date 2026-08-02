@@ -10,3 +10,17 @@ export interface UserResponse {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface UserCreateRequest {
+	username: string;
+	password: string;
+	fullName: string;
+	email: string;
+	role: UserRole;
+}
+
+export interface UserUpdateRequest {
+	fullName: string;
+	email: string;
+	role: UserRole;
+}
