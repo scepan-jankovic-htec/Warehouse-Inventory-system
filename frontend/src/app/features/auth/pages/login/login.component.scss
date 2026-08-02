@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #eef2ff 0%, #f8fafc 45%, #e0f2fe 100%);
+  overflow: hidden;
+}
+
+.login-backdrop {
+  position: absolute;
+  inset: auto -8rem -8rem auto;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 64, 175, 0.18) 0%, rgba(30, 64, 175, 0) 70%);
+  pointer-events: none;
+}
+
+.login-card {
+  width: min(100%, 28rem);
+  padding: 1.25rem;
+  border-radius: 1rem;
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.14),
+    0 3px 12px rgba(15, 23, 42, 0.08);
+  z-index: 1;
+}
+
+mat-card-header {
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+mat-card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+mat-card-subtitle {
+  margin-top: 0.2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-btn {
+  height: 2.75rem;
+  margin-top: 0.25rem;
+  font-weight: 600;
+  border-radius: 0.65rem;
+}
+
+.login-error {
+  color: var(--mat-sys-error, #b00020);
+  font-size: 0.8rem;
+  margin: -0.25rem 0 0.25rem;
+}
+
+mat-spinner {
+  display: inline-block;
+}
+
+@media (max-width: 599px) {
+  .login-card {
+    padding: 1rem;
+  }
+
+  mat-card-title {
+    font-size: 1.2rem;
+  }
+}
