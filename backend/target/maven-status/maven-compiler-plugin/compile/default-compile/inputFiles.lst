@@ -1,3 +1,4 @@
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/LoginRequest.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/repository/RepositoryLayerInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/DtoPackageInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/mapper/MapperPackageInfo.java
@@ -14,6 +15,7 @@
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/response/ResponseDtoPackageInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/MovementHistoryQuery.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/ReceiveStockRequest.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/CustomUserDetails.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/UserController.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/MovementController.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/ProductService.java
@@ -26,15 +28,20 @@
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/InventoryApplication.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/ServiceLayerInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/RequestDtoPackageInfo.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/RestAccessDeniedHandler.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/repository/CategoryRepository.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/JwtTokenProvider.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/AuthController.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/exception/InactiveResourceException.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/UserQuery.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/UpdateUserRequest.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/response/AuthTokenResponse.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/SecurityConfig.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/response/DataResponse.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/MovementService.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/CategoryQuery.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/exception/InsufficientStockException.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/CustomUserDetailsService.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/LocationController.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/TransferStockRequest.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/domain/Product.java
@@ -60,6 +67,7 @@
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/request/UpdateLocationRequest.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/domain/enums/UserRole.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/ServiceValidationSupport.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/RestAuthenticationEntryPoint.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/exception/ExceptionHandlingPackageInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/ControllerLayerInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/LocationQuery.java
@@ -68,6 +76,7 @@
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/domain/Category.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/controller/InventoryController.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/service/DashboardService.java
+/Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/security/JwtAuthenticationFilter.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/config/BooleanToIntegerConverter.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/domain/enums/EnumPackageInfo.java
 /Users/scepanjankovic/Documents/Warehouse-Inventory-system/backend/src/main/java/com/warehouse/inventory/dto/response/FieldErrorResponse.java
