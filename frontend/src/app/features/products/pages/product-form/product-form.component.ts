@@ -227,7 +227,7 @@ export class ProductFormComponent implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly route: ActivatedRoute,
-    private readonly router: Router,
+    public readonly router: Router,
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService
   ) {
@@ -298,6 +298,18 @@ export class ProductFormComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/products']);
   }
+
+  resetForm(): void {
+    this.form.reset({
+      sku: '',
+      name: '',
+      description: '',
+      categoryId: null,
+      unitOfMeasure: '',
+      reorderThreshold: 0,
+    });
+  }
+
 
   submit(): void {
     if (this.form.invalid) {

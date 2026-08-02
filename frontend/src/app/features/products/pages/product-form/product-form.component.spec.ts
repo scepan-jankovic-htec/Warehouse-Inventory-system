@@ -159,4 +159,106 @@ describe('ProductFormComponent', () => {
 
     expect(component.form.controls.categoryId.hasError('inactiveCategory')).toBe(true);
   });
+
+  it('should reset form successfully', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.form.patchValue({
+      sku: 'TEST-SKU',
+      name: 'Test Product',
+      categoryId: 1,
+      unitOfMeasure: 'PCS',
+      reorderThreshold: 10,
+    });
+    component.resetForm();
+    expect(component.form.value.sku).toBe('');
+    expect(component.form.value.name).toBe('');
+    expect(component.form.value.categoryId).toBe(null);
+  });
+
+  it('should check if in edit mode', () => {
+    const componentEdit = createComponent('10');
+    componentEdit.ngOnInit();
+    expect(componentEdit.isEditMode()).toBe(true);
+
+    const componentCreate = createComponent();
+    componentCreate.ngOnInit();
+    expect(componentCreate.isEditMode()).toBe(false);
+  });
+
+  it('should load product in edit mode', () => {
+    const component = createComponent('10');
+    component.ngOnInit();
+    expect(component.form.getRawValue().sku).toBe('BAT-AA-4P');
+    expect(component.form.value.name).toBe('AA Battery 4-Pack');
+  });
+
+  it('should normalize SKU to uppercase', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.form.patchValue({ sku: 'test-sku' });
+    component.normalizeSku();
+    expect(component.form.get('sku')?.value).toBe('TEST-SKU');
+  });
+
+  it('should display description character count', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.form.patchValue({ description: 'Test description' });
+    expect(component.descriptionLength()).toBe(16);
+  });
+
+  it('should navigate back to products list', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.goBack();
+    expect(component.router.navigate).toHaveBeenCalledWith(['/products']);
+  });
+
+  it('should validate SKU pattern (uppercase and hyphens only)', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.form.patchValue({ sku: 'test-123' });
+    expect(component.form.controls.sku.hasError('pattern')).toBe(true);
+    component.form.patchValue({ sku: 'TEST-123' });
+    expect(component.form.controls.sku.hasError('pattern')).toBe(false);
+  });
+
+  it('should validate SKU max length', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    const longSku = 'A'.repeat(51);
+    component.form.patchValue({ sku: longSku });
+    expect(component.form.controls.sku.hasError('maxlength')).toBe(true);
+  });
+
+  it('should validate name max length', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    const longName = 'A'.repeat(201);
+    component.form.patchValue({ name: longName });
+    expect(component.form.controls.name.hasError('maxlength')).toBe(true);
+  });
+
+  it('should validate category is required', () => {
+    const component = createComponent();
+    component.ngOnInit();
+    component.form.patchValue({ categoryId: null });
+    component.form.markAllAsTouched();
+    expect(component.form.controls.categoryId.hasError('required')).toBe(true);
+  });
+
+  it('should set duplicate error on form submission conflict', () => {
+    const component = createComponent(undefined, true);
+    component.ngOnInit();
+    component.form.patchValue({
+      sku: 'ABC-1',
+      name: 'Product',
+      categoryId: 1,
+      unitOfMeasure: 'PCS',
+      reorderThreshold: 0,
+    });
+    component.submit();
+    expect(component.form.controls.sku.hasError('duplicate')).toBe(true);
+  });
 });
