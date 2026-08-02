@@ -16,6 +16,7 @@ com/warehouse/inventory/controller/LocationController.class
 com/warehouse/inventory/service/MovementHistoryQuery.class
 com/warehouse/inventory/service/DashboardService$RecentMovementView.class
 com/warehouse/inventory/controller/CategoryController.class
+com/warehouse/inventory/security/CustomUserDetails.class
 com/warehouse/inventory/domain/DomainLayerInfo.class
 com/warehouse/inventory/repository/RepositoryLayerInfo.class
 com/warehouse/inventory/repository/InventoryMovementRepository.class
@@ -37,14 +38,18 @@ com/warehouse/inventory/service/PageResult$Pagination.class
 com/warehouse/inventory/service/InventoryService$InventoryProductView.class
 com/warehouse/inventory/service/DashboardService$DashboardLocationView.class
 com/warehouse/inventory/controller/UserController.class
+com/warehouse/inventory/security/RestAccessDeniedHandler.class
 com/warehouse/inventory/dto/request/ReceiveStockRequest.class
 com/warehouse/inventory/service/UserService$UserView.class
+com/warehouse/inventory/dto/response/AuthTokenResponse.class
+com/warehouse/inventory/security/JwtTokenProvider.class
 com/warehouse/inventory/domain/enums/EnumPackageInfo.class
 com/warehouse/inventory/service/LocationService$LocationView.class
 com/warehouse/inventory/dto/request/CreateLocationRequest.class
 com/warehouse/inventory/dto/request/UpdateLocationRequest.class
 com/warehouse/inventory/domain/Inventory.class
 com/warehouse/inventory/config/CorrelationIdFilter.class
+com/warehouse/inventory/security/RestAuthenticationEntryPoint.class
 com/warehouse/inventory/domain/InventoryMovement.class
 com/warehouse/inventory/config/UtcIsoLocalDateTimeConverter.class
 com/warehouse/inventory/repository/UserRepository.class
@@ -56,6 +61,7 @@ com/warehouse/inventory/service/ProductService$ProductView.class
 com/warehouse/inventory/service/UserQuery.class
 com/warehouse/inventory/domain/enums/LocationType.class
 com/warehouse/inventory/domain/AppUser.class
+com/warehouse/inventory/security/JwtAuthenticationFilter.class
 com/warehouse/inventory/service/MovementService$MovementResult.class
 com/warehouse/inventory/repository/ProductRepository.class
 com/warehouse/inventory/exception/ExceptionHandlingPackageInfo.class
@@ -78,6 +84,7 @@ com/warehouse/inventory/domain/enums/MovementType.class
 com/warehouse/inventory/service/ServiceValidationSupport.class
 com/warehouse/inventory/service/ProductService$ProductDetailView.class
 com/warehouse/inventory/service/ProductQuery.class
+com/warehouse/inventory/dto/request/LoginRequest.class
 com/warehouse/inventory/dto/request/TransferStockRequest.class
 com/warehouse/inventory/exception/BusinessException.class
 com/warehouse/inventory/controller/ProductController.class
@@ -89,7 +96,9 @@ com/warehouse/inventory/exception/InvalidOperationException.class
 com/warehouse/inventory/exception/InactiveResourceException.class
 com/warehouse/inventory/service/MovementService.class
 com/warehouse/inventory/domain/enums/UserRole.class
+com/warehouse/inventory/security/CustomUserDetailsService.class
 com/warehouse/inventory/service/LocationQuery.class
+com/warehouse/inventory/controller/AuthController.class
 com/warehouse/inventory/service/CategoryQuery.class
 com/warehouse/inventory/service/CategoryService$CategoryView.class
 com/warehouse/inventory/exception/InsufficientStockException.class
